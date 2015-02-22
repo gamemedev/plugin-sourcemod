@@ -1,0 +1,326 @@
+/**
+ * gameME Plugin
+ * http://www.gameme.com
+ * Copyright (C) 2007-2015 TTS Oetzel & Goerz GmbH
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ */
+
+
+Next release [V4.5]
+--------------------------------------------------------------------------------------------------------------------------------------------- 
++ Added game support for Insurgency 2014 (headshots, accuracy, kill-assists and more)
++ Added Spanish translations of ingame menus
+- Removed support of mod Insurgency: Modern Infantry Combat
+- Minor changes
+
+
+4th May 2014 [V4.4.2]
+--------------------------------------------------------------------------------------------------------------------------------------------- 
+Fixed: Wrong ingame menu usage
+
+
+2nd May 2014 [V4.4.1]
+--------------------------------------------------------------------------------------------------------------------------------------------- 
++ Added client query of variable "cl_connectmethod" to know how the players
+  have connected
++ Added "Reset Statistics" to player menu (gameME menu)
++ Added Polish/Russian/Serbian translations of ingame menus
+- Allow weapon damage display panels to be closed with every number key (0-9)
+- Replaced deprecated function "GuessSDKVersion" with "GetEngineVersion"
+- Fixed: Hook events too often for some games on map change
+- Minor changes
+
+
+23th January 2013 [V4.3]
+--------------------------------------------------------------------------------------------------------------------------------------------- 
+- CSGO: Added support for new protobuf user messages 
+- Fixed: Wrong syntax in gameme include file
+- Minor changes
+
+
+21th August 2012 [V4.2]
+--------------------------------------------------------------------------------------------------------------------------------------------- 
++ Added French translation of ingame menus
+- Fixed: Kill assists triggered on team-kills
+- Fixed: Spectator display requests if display is deactivated
+- Fixed: Some warnings
+- Minor changes
+
+
+30th July 2012 [V4.1]
+--------------------------------------------------------------------------------------------------------------------------------------------- 
++ TF2/CSS/DODS/HL2MP: Added support for custom colored ingame messages
++ CSS/CSGO/DODS: Added damage display on player-death
++ CSGO: Added game support
++ CSGO: Added spectator displaying
++ CSS/CSGO: Connected spectators see rank info now as well
++ CSS/CSGO: Added player role tracking 
++ Added custom/gg wins and kill/death streaks to raw message interface
+- Raw Message interface now uses "DataPacks" to submit data
+- Fixed: Weaponstats logging on round-end
+- Parts refactored and rewritten for further usage
+- Minor changes
+
+
+31th March 2012 [V4.0]
+--------------------------------------------------------------------------------------------------------------------------------------------- 
++ Added dynamic support to block ingame commands
+- Minor changes
+
+
+8th July 2011 [V3.9]
+--------------------------------------------------------------------------------------------------------------------------------------------- 
+- Block messages with "!" command prefix
+- Updated "gameme.inc" to mark functions as optional if not required
+- Fixed: Deprecated warning on compile
+- Minor changes
+
+
+26th April 2011 [V3.8]
+--------------------------------------------------------------------------------------------------------------------------------------------- 
++ Added "gameME" Tag to gameserver tags
++ Left 4 Dead II: New player action "level_a_charge"
+- Fixed: Weapon Accuracy not always dumped 
+- Minor changes
+
+
+11th January 2011 [V3.7]
+--------------------------------------------------------------------------------------------------------------------------------------------- 
+- Team Fortress 2: Removed kill weapon logging for
+  mini-sentrygun
+
+
+8th January 2011 [V3.6]
+--------------------------------------------------------------------------------------------------------------------------------------------- 
++ Team Fortress 2: Added action "steak"
+- Team Fortress 2: Removed special weapon logging
+- Minor changes
+- Fixed: Minor bugs 
+  
+ 
+13th December 2010 [V3.5]
+--------------------------------------------------------------------------------------------------------------------------------------------- 
++ Register as "gameme" library on plugin load
+- Fixed: Spectator displaying for css deathmatch
+- Fixed: Mini-Sentrygun "killedobject" event not triggered
+- Fixed: Location Logging disabled after plugin load
+- Fixed: Some SourceMod warnings
+- Fixed: Minor bugs 
+- Removed: Compiled example for raw message interface
+
+
+29th October 2010 [V3.4]
+--------------------------------------------------------------------------------------------------------------------------------------------- 
++ Added raw message interface for ingame message customization
+  and direct access to gameME Stats, documentation is available
+  at http://www.gameme.com/docs/api/rawmessages 
++ Added steam language detection and display ingame messages
+  in steam language 
++ Counter-Strike: Source: Added cool spectator stats reporting ingame 
++ Counter-Strike: Source: Added actions "domination", "revenge" and "mvp" 
++ Team Fortress 2: Added weapons "bushwacka", "glovesurgent", "blackbox"
+  and "sydneysleeper" 
++ Team Fortress 2: Support for mini sentryguns 
++ Team Fortress 2: Added multiple new player actions 
++ Team Fortress 2: Fixed various point exploits 
++ Added weapon accuracy logging for Team Fortress 2, Half-Life 2: Deathmatch
+  and Zombie Panic! Source 
++ CSPromod: Added round events 
++ Left4Dead2: Added "spit_hurt" action 
+- Refactored base game handling 
+- Fixed: Minor bugs 
+
+
+8th February 2010 [V3.3]
+--------------------------------------------------------------------------------------------------------------------------------------------- 
++ Added game support for CSProMod
++ Location Logging for Day of Defeat: Source and Half-Life 2: Deathmatch
++ New player actions for Team Fortress 2
++ Message coloring for Half-Life 2: Deathmatch
+- gameME Menu is available on "!settings" menu
+Fixed: Some actions triggered on suicides
+
+
+2nd December 2009 [V3.2]
+--------------------------------------------------------------------------------------------------------------------------------------------- 
++ Left 4 Dead: Added player/teams actions
++ Left 4 Dead: Added team colored ingame messages
++ Left 4 Dead II: Added weapon accuracy logging
++ Left 4 Dead II: Added melee weapon logging
++ Left 4 Dead II: Added team colored ingame messages
++ Insurgency: Adding Team objective logging
++ Insurgency: Updated accuracy logging
++ Team Fortress 2: Added player actions
+- Added support for SourceMod v1.3
+- Minor enhancements
+Fixed: Some minor bugs
+
+
+25th October 2009 [V3.1]
+--------------------------------------------------------------------------------------------------------------------------------------------- 
++ Improved Performance
+- Removed log hook
+- Changed player events logging
+- Removed multiple plugin detection
+- Removed check if vote is in progress
+Fixed: Blocking of chat commands on multiple hooks on say/say_team commands
+Fixed: Messages rarely not displayed properly
+Fixed: Coloring of some player names
+Fixed: Usage hint for gameme_player_action
+
+
+16th June 2009 [V3.0]
+--------------------------------------------------------------------------------------------------------------------------------------------- 
++ Plugin is now called "gameME Plugin"
++ Major performance improvements
++ Multiple recipients for ingame messages
++ Added new tf2 log event "player_teleported"
++ Integrated functions of "weapon_logging" plugin, just one plugin is now needed
++ Added weapon logging for Insurgency
++ New cvar "gameme_log_hook" to be able to disable log hook
++ Added check if plugins are loaded multiple times
+- Fixed wrong coloring on player names
+- Refactoring: Removed legacy code
+- Minor changes
+Fixed: Wrong accuracy tracking
+
+
+10th March 2009 [V2.9]
+--------------------------------------------------------------------------------------------------------------------------------------------- 
+- Internal Release
+
+
+30th November 2008 [V2.8]
+--------------------------------------------------------------------------------------------------------------------------------------------- 
++ Added game detection for "Left4Dead", "Fortress Forever", 
+  "Zombie Panic! Source" and "Age of Chivalry"
++ Added "Round_Win" events for "Insurgency" and "Age of Chivalry"
++ Added recognition of chat commands for the game "Zombie Panic! Source"
+- Minor changes
+Fixed: Logging of team names for "Insurgency"
+
+
+05. October 2008 [V2.7]
+--------------------------------------------------------------------------------------------------------------------------------------------- 
++ Added recognition of chat commands for the game "Insurgency"
+- Minor changes
+
+
+02. August 2008 [V2.6]
+--------------------------------------------------------------------------------------------------------------------------------------------- 
++ Added recognition of game "Insurgency"
++ Removed default message prefix and introduce a new cvar to define the prefix manually
+- Improved mod detection to ensure game-specific features are enabled
+
+
+17. July 2008 [V2.5]
+--------------------------------------------------------------------------------------------------------------------------------------------- 
+- Reenabled team-color check for colored messages
+- Disabled location logging for Half-Life 2: Deathmatch
+
+
+08. July 2008 [V2.4]
+--------------------------------------------------------------------------------------------------------------------------------------------- 
++ Improved performance of player location logging
++ Enabled location logging for Half-Life 2: Deathmatch
+- Removed team-check for colored messages
+- Refactoring
+- Minor changes
+Fixed: Player location logging for the event "suicide"
+
+
+25. May 2008 [V2.3]
+--------------------------------------------------------------------------------------------------------------------------------------------- 
++ Enable "hlx_sm_psay2"-command for Day of Defeat: Source to allow green colored messages
+
+
+12. May 2008 [V2.2]
+--------------------------------------------------------------------------------------------------------------------------------------------- 
++ Extend logging with locations for kill, suicides and player events
+Fixed: Commands "hlx_sm_msay" and "hlx_sm_hint" are not aborted for Half-Life 2: Deathmatch
+
+
+16. March 2008 [V2.1]
+--------------------------------------------------------------------------------------------------------------------------------------------- 
+Fixed: Plugin crashes with Half-Life 2: Deathmatch
+
+
+8. March 2008 [V2.0]
+--------------------------------------------------------------------------------------------------------------------------------------------- 
++ Added HLstatsX address protection system
++ Improved performance
++ Menus are not displayed during a running vote
+- Removed the requirement of the file hlstatsx.sdktools.txt
+- Switched to native team swap/detection functions
+Fixed: Death players won't be spawned alive by the swap function
+
+
+9. December 2007 [V1.9]
+--------------------------------------------------------------------------------------------------------------------------------------------- 
+- Team colors are checked on every call
+- The function to color players only uses one global array now
+Fixed: Handle the comma on splitted messages properly
+Fixed: Check now if the client is ingame for all HLstatsX commands
+
+
+26. November 2007 [V1.8]
+--------------------------------------------------------------------------------------------------------------------------------------------- 
+- Removed native network messages and switched to internal sourcemod commands where possible
+Fixed: Reenabled message cache
+
+
+26. October 2007 [V1.7]
+--------------------------------------------------------------------------------------------------------------------------------------------- 
++ Added support for games of the orange box
++ Added coloring in the chat area for Team Fortress 2
++ Added headshot/backstab kill events for Team Fortress 2
+Fixed: Browsing wrong URL if only one parameter is submitted
+
+
+22. September 2007 [V1.6]
+--------------------------------------------------------------------------------------------------------------------------------------------- 
+Fixed: Invalid handle created from function CreateArray() because the handles are not closed properly
+
+
+16. September 2007 [V1.5]
+--------------------------------------------------------------------------------------------------------------------------------------------- 
+- Added support for the inbuilt "AskConnect" dialog type
+Fixed: Some debug messages displayed
+
+
+9. September 2007 [V1.4]
+--------------------------------------------------------------------------------------------------------------------------------------------- 
++ Added cache for colored message to avoid unnecessary parsing
++ Team names are colored in private say messages
+- Changed way of coloring player names (first name in team color, all others in green)
+Fixed: Headshot event is triggered on team-kills
+Fixed: Various name display bugs
+Fixed: Some other minor bugs
+
+
+3. September 2007 [V1.3]
+--------------------------------------------------------------------------------------------------------------------------------------------- 
++ Added commands to trigger player/team/world action from sourcemod plugins and rcon interface
++ Introduction of command "hlx_sm_redirect" to redirect players with the new engine (Unused yet)
++ Added server status command to the HLstatsX ingame menu
+- Ingame menu is now callable with "hlx_menu", "hlstatsx" and "hlx" in the chat area
+- Added SetModel call to ensure the right player model is displayed after team swap
+- New blocked commands "gstats" and "global_stats" by default
+
+
+23. July 2007 [V1.2]
+--------------------------------------------------------------------------------------------------------------------------------------------- 
+- Initial Release
