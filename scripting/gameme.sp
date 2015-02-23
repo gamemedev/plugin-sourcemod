@@ -192,8 +192,8 @@ new ColorSlotArray[] = { -1, -1, -1, -1, -1, -1 };
  */
 
 
-#define MAX_CSGO_CODE_MODELS 14
-new const String: csgo_code_models[14][] = {"leet", 
+#define MAX_CSGO_CODE_MODELS 15
+new const String: csgo_code_models[15][] = {"leet", 
 	          	            	            "phoenix",
 	          	            	            "balkan",
 	          	            	            "st6",
@@ -206,7 +206,8 @@ new const String: csgo_code_models[14][] = {"leet",
 	          	            	            "fbi",
 	          	            	            "idf",
 	          	            	            "sas",
-	          	            	            "swat"};
+	          	            	            "swat",
+	          	            	            "zombie"};
 	          	            	           
                                 
 #define MAX_CSGO_WEAPON_COUNT 38
