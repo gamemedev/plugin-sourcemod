@@ -192,13 +192,22 @@ new ColorSlotArray[] = { -1, -1, -1, -1, -1, -1 };
  */
 
 
-#define MAX_CSGO_CODE_MODELS 6
-new const String: csgo_code_models[6][] = {"leet", 
-	          	            	           "phoenix",
-	          	            	           "balkan",
-	          	            	           "st6",
-	          	            	           "gign",
-	          	            	           "gsg9"};
+#define MAX_CSGO_CODE_MODELS 14
+new const String: csgo_code_models[14][] = {"leet", 
+	          	            	            "phoenix",
+	          	            	            "balkan",
+	          	            	            "st6",
+	          	            	            "gign",
+	          	            	            "gsg9",
+	          	            	            "anarchist",
+	          	            	            "pirate",
+	          	            	            "professional",
+	          	            	            "separatist",
+	          	            	            "fbi",
+	          	            	            "idf",
+	          	            	            "sas",
+	          	            	            "swat"};
+	          	            	           
                                 
 #define MAX_CSGO_WEAPON_COUNT 38
 new const String: csgo_weapon_list[][] = { "ak47", "m4a1", "deagle", "awp", "p90", "bizon", "hkp2000",
