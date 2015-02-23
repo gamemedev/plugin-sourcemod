@@ -658,7 +658,7 @@ public OnPluginStart()
 	if (gameme_plugin[mod_id] == MOD_CSGO) {
 		if (GetUserMessageType() == UM_Protobuf) {
 			gameme_plugin[protobuf] = 1;
-			LogToGame("Protobuf user messages detected");
+			LogToGame("gameME Protobuf user messages detected");
 		}
 	}
 
@@ -864,7 +864,7 @@ public OnAllPluginsLoaded()
 	}
 
 	if (LibraryExists("sdkhooks")) {
-		LogToGame("Extension SDK Hooks is available");
+		LogToGame("gameME Extension SDK Hooks is available");
 		gameme_plugin[sdkhook_available] = true;
 	}
 
