@@ -1,0 +1,31 @@
+"Updater"
+{
+	"Information"
+	{
+		"Version"
+		{
+			"Latest"	"4.5.0"
+		}
+		
+		"Notes"	"Added game support for Insurgency 2014 (headshots, accuracy, kill-assists and more)"
+		"Notes"	"Completed csgo role logging"
+		"Notes"	"Added Spanish translations of ingame menus"
+		"Notes" "Removed support of mod Insurgency: Modern Infantry Combat"
+		"Notes" "Minor changes"
+	}
+	
+	"Files"
+	{
+		"Plugin"	"Path_SM/plugins/gameme.smx"
+		"Plugin"	"Path_SM/translations/gameme.phrases.txt"
+		"Plugin"	"Path_SM/translations/de/gameme.phrases.txt"
+		"Plugin"	"Path_SM/translations/es/gameme.phrases.txt"
+		"Plugin"	"Path_SM/translations/fr/gameme.phrases.txt"
+		"Plugin"	"Path_SM/translations/pl/gameme.phrases.txt"
+		"Plugin"	"Path_SM/translations/rs/gameme.phrases.txt"
+		"Plugin"	"Path_SM/translations/ru/gameme.phrases.txt"
+		
+		"Source"	"Path_SM/scripting/gameme.sp"
+		"Source"	"Path_SM/scripting/include/gameme.inc"
+	}
+}
