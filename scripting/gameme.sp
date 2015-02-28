@@ -6458,9 +6458,9 @@ public Event_INSMODPlayerHurt(Handle: event, const String: name[], bool:dontBroa
 	//	"attacker"		"short"
 	//	"dmg_health"	"short"
 	//	"health"		"byte"
-	
-	new attacker  = GetEventInt(event, "attacker");
-	new victim = GetEventInt(event, "userid");
+
+	new attacker  = GetClientOfUserId(GetEventInt(event, "attacker"));
+	new victim = GetClientOfUserId(GetEventInt(event, "userid"));
 
 	if ((attacker > 0) && (attacker != victim)) {
 		decl String: weapon_str[32];
