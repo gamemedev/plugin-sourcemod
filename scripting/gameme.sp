@@ -6457,7 +6457,9 @@ public Event_INSMODPlayerHurt(Handle: event, const String: name[], bool:dontBroa
 
 			if (hitgroup == HITGROUP_HEAD) {
 				player_weapons[attacker][weapon_index][wheadshots]++;
-				log_player_event(attacker, "triggered", "headshot");
+				if (IsClientInGame(attacker)) {
+					log_player_event(attacker, "triggered", "headshot");
+				}
 			}
 		}
 	}
