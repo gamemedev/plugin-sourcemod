@@ -28,7 +28,6 @@
 #include <sdktools>
 #include <gameme>
 #undef REQUIRE_EXTENSIONS
-#include <updater>
 #include <cstrike>
 #include <clientprefs>
 #include <sdkhooks>
@@ -46,8 +45,6 @@ public Plugin:myinfo = {
 	version = GAMEME_PLUGIN_VERSION,
 	url = "http://www.gameme.com"
 };
-
-#define GAMEME_PLUGIN_UPDATE_URL "https://github.com/gamemedev/plugin-sourcemod/raw/master"
 
 // mod information
 #define MOD_CSS 1
@@ -492,10 +489,6 @@ enum callback_data {callback_data_id, Float: callback_data_time, callback_data_c
 
 public OnPluginStart() 
 {
-	if (LibraryExists("updater")) {
-		Updater_AddPlugin(GAMEME_PLUGIN_UPDATE_URL);
-	}
-
 	LogToGame("gameME Plugin %s (http://www.gameme.com), copyright (c) 2007-2015 TTS Oetzel & Goerz GmbH", GAMEME_PLUGIN_VERSION);
 
 	// setup default values
@@ -945,14 +938,6 @@ public OnAllPluginsLoaded()
 			}
 		}
 	}
-}
-
-
-public OnLibraryAdded(const String:name[])
-{
-    if (StrEqual(name, "updater")) {
-        Updater_AddPlugin(GAMEME_PLUGIN_UPDATE_URL);
-    }
 }
 
 
