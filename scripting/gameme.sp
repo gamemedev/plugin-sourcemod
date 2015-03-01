@@ -35,7 +35,6 @@
 #include <socket>
 
 
-
 // plugin information
 #define GAMEME_PLUGIN_VERSION "4.5.0"
 public Plugin:myinfo = {
@@ -45,6 +44,7 @@ public Plugin:myinfo = {
 	version = GAMEME_PLUGIN_VERSION,
 	url = "http://www.gameme.com"
 };
+
 
 // mod information
 #define MOD_CSS 1
