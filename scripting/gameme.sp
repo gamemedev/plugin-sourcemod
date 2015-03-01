@@ -4699,32 +4699,7 @@ public Action: gameme_browse(args)
 
 				new player_index = GetClientOfUserId(recipient_client);
 				if ((player_index > 0) && (!IsFakeClient(player_index)) && (IsClientInGame(player_index))) {
-
-					if (gameme_plugin[protobuf] == 1) {
-						new Handle: message_handle = StartMessageOne("VGUIMenu", player_index);
-						if (message_handle != INVALID_HANDLE) {
-							PbSetString(message_handle, "name", "info");
-							PbSetBool(message_handle, "show", true);
-
-							new Handle: subkey;
-							
-							subkey = PbAddMessage(message_handle, "subkeys");
-							PbSetString(subkey, "name", "type");
-							PbSetString(subkey, "str", "2"); // MOTDPANEL_TYPE_URL
-
-							subkey = PbAddMessage(message_handle, "subkeys");
-							PbSetString(subkey, "name", "title");
-							PbSetString(subkey, "str", "gameME");
-
-							subkey = PbAddMessage(message_handle, "subkeys");
-							PbSetString(subkey, "name", "msg");
-							PbSetString(subkey, "str", client_url);
-
-							EndMessage();
-						}
-					} else {
-						ShowMOTDPanel(player_index, "gameME", client_url, MOTDPANEL_TYPE_URL);
-					}
+					ShowMOTDPanel(player_index, "gameME", client_url, MOTDPANEL_TYPE_URL);
 				}
 			}
 		}
