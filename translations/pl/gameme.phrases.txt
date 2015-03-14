@@ -3,7 +3,7 @@
 
 	"IngameMenu_Caption"
 	{
-		"pl"		"gameMe - Strona Główna
+		"pl"		"gameME - Strona Główna
 	}
 	"IngameMenu_Menu1"
 	{
