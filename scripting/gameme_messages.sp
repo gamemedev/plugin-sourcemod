@@ -518,11 +518,10 @@ public onGameMEStatsNext(command, client, String: message_prefix[], &Handle: dat
 				decl String: entry_message[192];
 				if (i == 0) {
 					Format(entry_message, 192, "   %02d  %d       -      %s\\n", rank, skill, name);
-					strcopy(message[strlen(message)], 192, entry_message);
 				} else {
 					Format(entry_message, 192, "   %02d  %d  +%04d  %s\\n", rank, skill, diff, name);
-					strcopy(message[strlen(message)], 192, entry_message);
 				}
+				strcopy(message[strlen(message)], 192, entry_message);
 
 				if (prev_skill == -1) {
 					prev_skill = skill;
