@@ -1,7 +1,7 @@
 /**
  * gameME Plugin
  * http://www.gameme.com
- * Copyright (C) 2007-2015 TTS Oetzel & Goerz GmbH
+ * Copyright (C) 2007-2016 TTS Oetzel & Goerz GmbH
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -489,7 +489,7 @@ enum callback_data {callback_data_id, Float: callback_data_time, callback_data_c
 
 public OnPluginStart() 
 {
-	LogToGame("gameME Plugin %s (http://www.gameme.com), copyright (c) 2007-2015 TTS Oetzel & Goerz GmbH", GAMEME_PLUGIN_VERSION);
+	LogToGame("gameME Plugin %s (http://www.gameme.com), copyright (c) 2007-2016 TTS Oetzel & Goerz GmbH", GAMEME_PLUGIN_VERSION);
 
 	// setup default values
 	gameme_plugin[log_locations]       = 1;
