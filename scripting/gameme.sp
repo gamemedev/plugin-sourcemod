@@ -360,8 +360,8 @@ new zps_players[MAXPLAYERS + 1][zps_player];
  *  Insurgency 2014
  */
 
-#define MAX_INSMOD_WEAPON_COUNT 24
-new const String: insmod_weapon_list[][] = {"ak74", "akm", "aks74u", "fal", "m14", "m16a4", "m1911", "m1a1", "m249", "m40a1", "m45", "m4a1", "m590", "m9", "makarov", "mini14", "mk18", "mosin", "mp40", "mp5", "rpk", "sks", "toz", "ump45"}; 
+#define MAX_INSMOD_WEAPON_COUNT 29
+new const String: insmod_weapon_list[][] = {"ak74", "akm", "aks74u", "fal", "m14", "m16a4", "m1911", "m1a1", "m249", "m40a1", "m45", "m4a1", "m590", "m9", "makarov", "mini14", "mk18", "mosin", "mp40", "mp5", "rpk", "sks", "toz", "ump45", "galil", "galil_sar", "sterling", "model10", "l1a1"}; 
 
 enum insmod_player {
 	String: last_role[64]
