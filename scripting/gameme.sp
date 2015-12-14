@@ -36,7 +36,7 @@
 
 
 // plugin information
-#define GAMEME_PLUGIN_VERSION "4.6.1"
+#define GAMEME_PLUGIN_VERSION "4.7.0"
 public Plugin:myinfo = {
 	name = "gameME Plugin",
 	author = "TTS Oetzel & Goerz GmbH",
@@ -211,13 +211,16 @@ new const String: csgo_code_models[15][] = {"leet",
 	          	            	            "zombie"};
 	          	            	           
                                 
-#define MAX_CSGO_WEAPON_COUNT 38
+#define MAX_CSGO_WEAPON_COUNT 52
 new const String: csgo_weapon_list[][] = { "ak47", "m4a1", "deagle", "awp", "p90", "bizon", "hkp2000",
 										   "glock", "nova", "galilar", "ump45", "famas", "aug", "ssg08",
 										   "p250", "mp7", "elite", "sg556", "knife", "fiveseven", "sawedoff",
 										   "mag7", "hegrenade", "tec9", "scar20", "mp9", "xm1014", "negev",
 										   "g3sg1", "mac10", "m249", "taser", "inferno", "decoy", "flashbang",
-										   "smokegrenade", "molotov", "incgrenade", "knifegg" };
+										   "smokegrenade", "molotov", "incgrenade", "knifegg", "usp_silencer",
+										   "m4a1_silencer", "bayonet", "knife_m9_bayonet", "knife_karambit",
+										   "knife_flip", "knife_gut", "cz75a", "knife_tactical", "knife_butterfly",
+										   "knife_falchion", "knife_push", "revolver" };
 
 
 /**
@@ -360,8 +363,8 @@ new zps_players[MAXPLAYERS + 1][zps_player];
  *  Insurgency 2014
  */
 
-#define MAX_INSMOD_WEAPON_COUNT 29
-new const String: insmod_weapon_list[][] = {"ak74", "akm", "aks74u", "fal", "m14", "m16a4", "m1911", "m1a1", "m249", "m40a1", "m45", "m4a1", "m590", "m9", "makarov", "mini14", "mk18", "mosin", "mp40", "mp5", "rpk", "sks", "toz", "ump45", "galil", "galil_sar", "sterling", "model10", "l1a1"}; 
+#define MAX_INSMOD_WEAPON_COUNT 30
+new const String: insmod_weapon_list[][] = {"ak74", "akm", "aks74u", "fal", "m14", "m16a4", "m1911", "m1a1", "m249", "m40a1", "m45", "m4a1", "m590", "m9", "makarov", "mini14", "mk18", "mosin", "mp40", "mp5", "rpk", "sks", "toz", "ump45", "galil", "galil_sar", "sterling", "model10", "l1a1", "gurkha"}; 
 
 enum insmod_player {
 	String: last_role[64]
