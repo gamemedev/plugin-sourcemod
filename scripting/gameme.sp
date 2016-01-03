@@ -155,7 +155,7 @@ new gameme_players[MAXPLAYERS + 1][gameme_data];
 #define HITGROUP_LEFTLEG   6
 #define HITGROUP_RIGHTLEG  7
 
-#define MAX_LOG_WEAPONS    38
+#define MAX_LOG_WEAPONS    52
 #define LOG_HIT_OFFSET     8
 enum weapon_data {wshots, whits, wkills, wheadshots, wteamkills, wdamage, wdeaths, whealth, wgeneric, whead, wchest, wstomach, wleftarm, wrightarm, wleftleg, wrightleg}
 	
