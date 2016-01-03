@@ -18,9 +18,10 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-Current Development [V4.7.0]
+3rd January 2016 [V4.7.1]
 --------------------------------------------------------------------------------------------------------------------------------------------- 
 + Added new weapons for CSGO
+- Fixed: Accuarcy tracking for CSGO
 - Minor changes
 - Compiled against 1.7.3-dev+5280
 
