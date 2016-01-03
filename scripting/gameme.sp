@@ -2078,6 +2078,7 @@ public Event_CSGOPlayerFire(Handle: event, const String: name[], bool:dontBroadc
 	if (userid > 0) {
 		decl String: weapon_str[32];
 		GetEventString(event, "weapon", weapon_str, 32);
+		ReplaceString(weapon_str, 32, "weapon_", "", false);
 		new weapon_index = get_weapon_index(csgo_weapon_list, MAX_CSGO_WEAPON_COUNT, weapon_str);
 		if (weapon_index > -1) {
 			if ((weapon_index != 22) && // hegrenade
