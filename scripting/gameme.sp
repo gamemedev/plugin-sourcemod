@@ -155,7 +155,7 @@ new gameme_players[MAXPLAYERS + 1][gameme_data];
 #define HITGROUP_LEFTLEG   6
 #define HITGROUP_RIGHTLEG  7
 
-#define MAX_LOG_WEAPONS    52
+#define MAX_LOG_WEAPONS    64
 #define LOG_HIT_OFFSET     8
 enum weapon_data {wshots, whits, wkills, wheadshots, wteamkills, wdamage, wdeaths, whealth, wgeneric, whead, wchest, wstomach, wleftarm, wrightarm, wleftleg, wrightleg}
 	
@@ -211,7 +211,7 @@ new const String: csgo_code_models[15][] = {"leet",
 	          	            	            "zombie"};
 	          	            	           
                                 
-#define MAX_CSGO_WEAPON_COUNT 52
+#define MAX_CSGO_WEAPON_COUNT 53
 new const String: csgo_weapon_list[][] = { "ak47", "m4a1", "deagle", "awp", "p90", "bizon", "hkp2000",
 										   "glock", "nova", "galilar", "ump45", "famas", "aug", "ssg08",
 										   "p250", "mp7", "elite", "sg556", "knife", "fiveseven", "sawedoff",
@@ -220,7 +220,7 @@ new const String: csgo_weapon_list[][] = { "ak47", "m4a1", "deagle", "awp", "p90
 										   "smokegrenade", "molotov", "incgrenade", "knifegg", "usp_silencer",
 										   "m4a1_silencer", "bayonet", "knife_m9_bayonet", "knife_karambit",
 										   "knife_flip", "knife_gut", "cz75a", "knife_tactical", "knife_butterfly",
-										   "knife_falchion", "knife_push", "revolver" };
+										   "knife_falchion", "knife_push", "revolver", "knife_survival_bowie" };
 
 
 /**
