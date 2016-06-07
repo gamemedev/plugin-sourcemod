@@ -36,7 +36,7 @@
 
 
 // plugin information
-#define GAMEME_PLUGIN_VERSION "4.7.2"
+#define GAMEME_PLUGIN_VERSION "4.8.0"
 public Plugin:myinfo = {
 	name = "gameME Plugin",
 	author = "TTS Oetzel & Goerz GmbH",
