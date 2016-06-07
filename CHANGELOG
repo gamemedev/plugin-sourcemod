@@ -18,6 +18,14 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
+
+Current Development [V4.8.0]
+--------------------------------------------------------------------------------------------------------------------------------------------- 
++ Added new weapon bowie knife for CSGO
+- Minor syntax changes
+- Compiled against 1.8.0.5908
+
+
 3rd January 2016 [V4.7.2]
 --------------------------------------------------------------------------------------------------------------------------------------------- 
 - Fixed: Wrong weapon logging constant
