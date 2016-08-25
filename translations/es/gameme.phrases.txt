@@ -67,7 +67,7 @@
 	}
 	"IngameMenu_Menu16"
 	{
-		"en"		"Resetear Estadisticas"
+		"es"		"Resetear Estadisticas"
 	}
 	
 
