@@ -1,7 +1,7 @@
 /**
  * gameME Plugin
  * http://www.gameme.com
- * Copyright (C) 2007-2016 TTS Oetzel & Goerz GmbH
+ * Copyright (C) 2007-2017 TTS Oetzel & Goerz GmbH
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -23,7 +23,7 @@ Current Development [V4.8.0]
 --------------------------------------------------------------------------------------------------------------------------------------------- 
 + Added new weapon bowie knife for CSGO
 - Minor syntax changes
-- Compiled against 1.8.0.5908
+- Compiled against 1.8.0.5995
 
 
 3rd January 2016 [V4.7.2]
