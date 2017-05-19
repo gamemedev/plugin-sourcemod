@@ -3984,7 +3984,7 @@ public Action: gameme_raw_message(args)
 
 					decl String: session_hpk_param[16];
 					GetCmdArg(29, session_hpk_param, 16);					
-					WritePackFloat(pack, StringToFloat(hpk_param)); // session_hpk
+					WritePackFloat(pack, StringToFloat(session_hpk_param)); // session_hpk
 
 					decl String: session_acc_param[16];
 					GetCmdArg(30, session_acc_param, 16);					
