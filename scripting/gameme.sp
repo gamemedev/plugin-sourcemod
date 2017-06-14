@@ -1001,43 +1001,43 @@ get_server_mod()
 			strcopy(gameme_plugin[game_mod], 32, "CSS");
 			gameme_plugin[mod_id] = MOD_CSS;
 		}
-		if (StrContains(game_description, "Counter-Strike: Global Offensive", false) != -1) {
+		else if (StrContains(game_description, "Counter-Strike: Global Offensive", false) != -1) {
 			strcopy(gameme_plugin[game_mod], 32, "CSGO");
 			gameme_plugin[mod_id] = MOD_CSGO;
 		}
-		if (StrContains(game_description, "Day of Defeat", false) != -1) {
+		else if (StrContains(game_description, "Day of Defeat", false) != -1) {
 			strcopy(gameme_plugin[game_mod], 32, "DODS");
 			gameme_plugin[mod_id] = MOD_DODS;
 		}
-		if (StrContains(game_description, "Half-Life 2 Deathmatch", false) != -1) {
+		else if (StrContains(game_description, "Half-Life 2 Deathmatch", false) != -1) {
 			strcopy(gameme_plugin[game_mod], 32, "HL2MP");
 			gameme_plugin[mod_id] = MOD_HL2MP;
 		}
-		if (StrContains(game_description, "Team Fortress", false) != -1) {
+		else if (StrContains(game_description, "Team Fortress", false) != -1) {
 			strcopy(gameme_plugin[game_mod], 32, "TF2");
 			gameme_plugin[mod_id] = MOD_TF2;
 		}
-		if (StrContains(game_description, "Insurgency", false) != -1) {
+		else if (StrContains(game_description, "Insurgency", false) != -1) {
 			strcopy(gameme_plugin[game_mod], 32, "INSMOD");
 			gameme_plugin[mod_id] = MOD_INSMOD;
 		}
-		if (StrContains(game_description, "L4D", false) != -1) {
+		else if (StrContains(game_description, "L4D", false) != -1) {
 			strcopy(gameme_plugin[game_mod], 32, "L4D");
 			gameme_plugin[mod_id] = MOD_L4D;
 		}
-		if (StrContains(game_description, "Left 4 Dead 2", false) != -1) {
+		else if (StrContains(game_description, "Left 4 Dead 2", false) != -1) {
 			strcopy(gameme_plugin[game_mod], 32, "L4DII");
 			gameme_plugin[mod_id] = MOD_L4DII;
 		}
-		if (StrContains(game_description, "Fortress Forever", false) != -1) {
+		else if (StrContains(game_description, "Fortress Forever", false) != -1) {
 			strcopy(gameme_plugin[game_mod], 32, "FF");
 			gameme_plugin[mod_id] = MOD_FF;
 		}
-		if (StrContains(game_description, "CSPromod", false) != -1) {
+		else if (StrContains(game_description, "CSPromod", false) != -1) {
 			strcopy(gameme_plugin[game_mod], 32, "CSP");
 			gameme_plugin[mod_id] = MOD_CSP;
 		}
-		if (StrContains(game_description, "ZPS", false) != -1) {
+		else if (StrContains(game_description, "ZPS", false) != -1) {
 			strcopy(gameme_plugin[game_mod], 32, "ZPS");
 			gameme_plugin[mod_id] = MOD_ZPS;
 		}
@@ -1051,43 +1051,43 @@ get_server_mod()
 				strcopy(gameme_plugin[game_mod], 32, "CSS");
 				gameme_plugin[mod_id] = MOD_CSS;
 			}
-			if (StrContains(game_folder, "csgo", false) != -1) {
+			else if (StrContains(game_folder, "csgo", false) != -1) {
 				strcopy(gameme_plugin[game_mod], 32, "CSGO");
 				gameme_plugin[mod_id] = MOD_CSGO;
 			}
-			if (StrContains(game_folder, "dod", false) != -1) {
+			else if (StrContains(game_folder, "dod", false) != -1) {
 				strcopy(gameme_plugin[game_mod], 32, "DODS");
 				gameme_plugin[mod_id] = MOD_DODS;
 			}
-			if (StrContains(game_folder, "hl2mp", false) != -1) {
+			else if (StrContains(game_folder, "hl2mp", false) != -1) {
 				strcopy(gameme_plugin[game_mod], 32, "HL2MP");
 				gameme_plugin[mod_id] = MOD_HL2MP;
 			}
-			if (StrContains(game_folder, "tf", false) != -1) {
+			else if (StrContains(game_folder, "tf", false) != -1) {
 				strcopy(gameme_plugin[game_mod], 32, "TF2");
 				gameme_plugin[mod_id] = MOD_TF2;
 			}
-			if (StrContains(game_folder, "insurgency", false) != -1) {
+			else if (StrContains(game_folder, "insurgency", false) != -1) {
 				strcopy(gameme_plugin[game_mod], 32, "INSMOD");
 				gameme_plugin[mod_id] = MOD_INSMOD;
 			}
-			if (StrContains(game_folder, "left4dead", false) != -1) {
+			else if (StrContains(game_folder, "left4dead", false) != -1) {
 				strcopy(gameme_plugin[game_mod], 32, "L4D");
 				gameme_plugin[mod_id] = MOD_L4D;
 			}
-			if (StrContains(game_folder, "left4dead2", false) != -1) {
+			else if (StrContains(game_folder, "left4dead2", false) != -1) {
 				strcopy(gameme_plugin[game_mod], 32, "L4DII");
 				gameme_plugin[mod_id] = MOD_L4DII;
 			}
-			if (StrContains(game_folder, "FortressForever", false) != -1) {
+			else if (StrContains(game_folder, "FortressForever", false) != -1) {
 				strcopy(gameme_plugin[game_mod], 32, "FF");
 				gameme_plugin[mod_id] = MOD_FF;
 			}
-			if (StrContains(game_folder, "cspromod", false) != -1) {
+			else if (StrContains(game_folder, "cspromod", false) != -1) {
 				strcopy(gameme_plugin[game_mod], 32, "CSP");
 				gameme_plugin[mod_id] = MOD_CSP;
 			}
-			if (StrContains(game_folder, "zps", false) != -1) {
+			else if (StrContains(game_folder, "zps", false) != -1) {
 				strcopy(gameme_plugin[game_mod], 32, "ZPS");
 				gameme_plugin[mod_id] = MOD_ZPS;
 			}
