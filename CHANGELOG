@@ -21,6 +21,7 @@
 
 Current Development [V4.8.0]
 --------------------------------------------------------------------------------------------------------------------------------------------- 
++ Added capture/destroy logg8ing for Insurgency
 + Added new weapon bowie knife for CSGO
 + Added Danish translation of ingame menus
 - Minor syntax changes
