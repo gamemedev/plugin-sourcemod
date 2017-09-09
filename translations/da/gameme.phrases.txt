@@ -31,7 +31,7 @@
 	}
 	"IngameMenu_Menu7"
 	{
-		"da"		"Clan Ranking"
+		"da"		"Clan Rank"
 	}
 	"IngameMenu_Menu8"
 	{
@@ -55,7 +55,7 @@
 	}
 	"IngameMenu_Menu13"
 	{
-		"da"		"Spiller Dræbte"
+		"da"		"Spillere Dræbte"
 	}
 	"IngameMenu_Menu14"
 	{
@@ -145,12 +145,7 @@
 	}
 	"DamagePanel_Hp"
 	{
-		"da"		"liv"
-	}
-
-	"DamageChat_Killedyou"
-	{
-		"da"		"dræbte dig med skade, liv tilbage"
-	}
+		"da"		"Liv"
+	}	
 
 }
