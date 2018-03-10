@@ -3,7 +3,7 @@
 
 	"IngameMenu_Caption"
 	{
-		"ru"		"gameME - Гл. меню"
+		"ru"		"gameME - Главное меню"
 	}
 	"IngameMenu_Menu1"
 	{
@@ -15,7 +15,7 @@
 	}
 	"IngameMenu_Menu3"
 	{
-		"ru"		"Топ 10 игроков"
+		"ru"		"Топ-10 игроков"
 	}
 	"IngameMenu_Menu4"
 	{
@@ -145,12 +145,12 @@
 	}
 	"DamagePanel_Hp"
 	{
-		"ru"		"хп"
+		"ru"		"hp"
 	}
 
 	"DamageChat_Killedyou"
 	{
-		"ru"		"{1} имея {3} hp убил вас нанеся {2} урона"
+		"ru"		"Вас убил {1}, имея {3} hp и нанеся вам {2} урона"
 	}
 
 }
