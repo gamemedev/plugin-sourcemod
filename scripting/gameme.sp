@@ -1,7 +1,7 @@
 /**
  * gameME Plugin
  * http://www.gameme.com
- * Copyright (C) 2007-2017 TTS Oetzel & Goerz GmbH
+ * Copyright (C) 2007-2018 TTS Oetzel & Goerz GmbH
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -3235,6 +3235,23 @@ public OnEntityCreated(entity, const String: classname[]) {
 		}
 	}
 }
+
+
+public Action: OnClientCommandKeyValues(int client, KeyValues: kv) 
+{ 
+	if (gameme_plugin[mod_id] == MOD_CSGO) {
+		decl String: command[PLATFORM_MAX_PATH];
+		if ((KvGetSectionName(kv, command, sizeof(command))) && (StrEqual(command, "ClanTagChanged", false))) { 
+			decl String: clan[192];
+			if (KvGetString(kv, "tag", clan, sizeof(clan), "")) { 
+				if (strcmp(clan, "") != 0) {
+					log_player_settings(client, "triggered", "clantag", clan);
+				}
+			}
+        } 
+	} 
+	return Plugin_Continue;
+}  
 
 
 public Action:OnTF2GameLog(const String: message[])
