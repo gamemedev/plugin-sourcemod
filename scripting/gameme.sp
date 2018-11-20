@@ -37,7 +37,7 @@
 
 
 // plugin information
-#define GAMEME_PLUGIN_VERSION "4.8.1"
+#define GAMEME_PLUGIN_VERSION "4.9.0"
 public Plugin:myinfo = {
 	name = "gameME Plugin",
 	author = "TTS Oetzel & Goerz GmbH",
@@ -3304,7 +3304,7 @@ public OnDisplaySpectatorinfoChange(Handle:cvar, const String:oldVal[], const St
 						LogToGame("gameME spectator displaying activated");
 					} else if (display_info == 0) {
 						gameme_plugin[display_spectator] = 0;
-						for (new i = 0; (i <= MAXPLAYERS); i++) {
+						for (new i = 1; (i <= MaxClients); i++) {
 							if (gameme_players[i][pspectator][stimer] != INVALID_HANDLE) {
 								KillTimer(gameme_players[i][pspectator][stimer]);
 								gameme_players[i][pspectator][stimer] = INVALID_HANDLE;
