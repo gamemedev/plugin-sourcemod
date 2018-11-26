@@ -2426,14 +2426,15 @@ public Event_CSGOPlayerDeath(Handle: event, const String: name[], bool:dontBroad
 	//	"revenge"	"short"		// did killer get revenge on victim with this kill
 	//	"penetrated" "short"	// number of objects shot penetrated before killing target
 
-	new victim   = GetClientOfUserId(GetEventInt(event, "userid"));
-	new attacker = GetClientOfUserId(GetEventInt(event, "attacker"));
+	new victim       = GetClientOfUserId(GetEventInt(event, "userid"));
+	new attacker     = GetClientOfUserId(GetEventInt(event, "attacker"));
+	new weapon_index = -1;
 
 	if ((victim > 0) && (attacker > 0)) {
 		if (attacker != victim) {
 			decl String: weapon_str[32];
 			GetEventString(event, "weapon", weapon_str, 32);
-			new weapon_index = get_weapon_index(csgo_weapon_list, MAX_CSGO_WEAPON_COUNT, weapon_str);
+			weapon_index = get_weapon_index(csgo_weapon_list, MAX_CSGO_WEAPON_COUNT, weapon_str);
 			if (weapon_index > -1) {
 				player_weapons[attacker][weapon_index][wkills]++;
 				new headshot = GetEventBool(event, "headshot");
@@ -2482,8 +2483,17 @@ public Event_CSGOPlayerDeath(Handle: event, const String: name[], bool:dontBroad
 		
 		gameme_players[victim][palive] = 0;
 		if (gameme_plugin[display_spectator] == 1) {
-			if ((IsClientInGame(victim)) && (!IsFakeClient(victim))) {
-				gameme_players[victim][pspectator][stimer] = CreateTimer(SPECTATOR_TIMER_INTERVAL, spectator_player_timer, victim, TIMER_REPEAT | TIMER_FLAG_NO_MAPCHANGE);
+			if ((victim > 0) && (attacker > 0)) {
+				if ((IsClientInGame(victim)) && (!IsFakeClient(victim))) {
+					if ((victim == attacker) && (weapon_index == -1)) {
+						// this "could" a simple player disconnect if the cvar "mp_disconnect_kills_players"
+						// is enabled. However player "world" kills for example by jumping etc are ignored now 
+						// as well. Hopefully the player disconnect event gets a flag if the kill is triggered
+						// by the disconnect event.
+					} else {
+						gameme_players[victim][pspectator][stimer] = CreateTimer(SPECTATOR_TIMER_INTERVAL, spectator_player_timer, victim, TIMER_REPEAT | TIMER_FLAG_NO_MAPCHANGE);
+					}
+				}
 			}
 
 			for (new j = 0; (j <= MAXPLAYERS); j++) {

@@ -20,6 +20,7 @@
 
 Current work [V4.9.0]
 --------------------------------------------------------------------------------------------------------------------------------------------- 
+- Fixed: Handling for CSGO cvar "mp_disconnect_kills_players"
 - Fixed: Wrong reset of spectator timers
 - Compiled against 1.9.0.6261
 
