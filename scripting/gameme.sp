@@ -4039,22 +4039,23 @@ public Action: gameme_raw_message(args)
 					// global values
 					WritePackCell(pack, get_param(40, argument_count)); // global_rank
 					WritePackCell(pack, get_param(41, argument_count)); // global_players
-					WritePackCell(pack, get_param(42, argument_count)); // global_kills
-					WritePackCell(pack, get_param(43, argument_count)); // global_deaths
+					WritePackCell(pack, get_param(42, argument_count)); // global_skill
+					WritePackCell(pack, get_param(43, argument_count)); // global_kills
+					WritePackCell(pack, get_param(44, argument_count)); // global_deaths
 
 					decl String: global_kpd_param[16];
-					GetCmdArg(44, global_kpd_param, 16);					
+					GetCmdArg(45, global_kpd_param, 16);					
 					WritePackFloat(pack, StringToFloat(global_kpd_param)); // global_kpd
 
-					WritePackCell(pack, get_param(45, argument_count)); // global_headshots
+					WritePackCell(pack, get_param(46, argument_count)); // global_headshots
 
 					decl String: global_hpk_param[16];
-					GetCmdArg(46, global_hpk_param, 16);					
+					GetCmdArg(47, global_hpk_param, 16);					
 					WritePackFloat(pack, StringToFloat(global_hpk_param)); // global_hpk
 
 					// country
 					decl String: country_code[16];
-					GetCmdArg(47, country_code, 16);					
+					GetCmdArg(48, country_code, 16);					
 					WritePackString(pack, country_code); // player country
 					
 					
