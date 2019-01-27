@@ -120,11 +120,15 @@ public QuerygameMEStatsCallback(command, payload, client, &Handle: datapack)
 		// global values
 		new global_rank       = ReadPackCell(data);
 		new global_players    = ReadPackCell(data);
+		new global_skill      = ReadPackCell(data);
 		new global_kills      = ReadPackCell(data);
 		new global_deaths     = ReadPackCell(data);
 		new Float: global_kpd = ReadPackFloat(data);
 		new global_headshots  = ReadPackCell(data);
 		new Float: global_hpk = ReadPackFloat(data);
+
+		decl String: player_country_code[2];
+		ReadPackString(data, player_country_code, 2);
 
 		CloseHandle(data);
 
@@ -344,8 +348,6 @@ public onGameMEStatsRank(command, client, String: message_prefix[], &Handle: dat
 
 public onGameMEStatsPublicCommand(command, client, String: message_prefix[], &Handle: datapack)
 {
-	new color_index = -1;
-
 	if ((client > 0) && ((command == RAW_MESSAGE_PLACE) || (command == RAW_MESSAGE_KDEATH) || (command == RAW_MESSAGE_SESSION_DATA))) {
 
 		new Handle: data = CloneHandle(datapack);
