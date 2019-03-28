@@ -4751,7 +4751,7 @@ public Action: gameme_swap(args)
 		return Plugin_Handled;
 	}
 
-	if (gameme_plugin[mod_id] != MOD_CSS) {
+	if ((gameme_plugin[mod_id] != MOD_CSS) && (gameme_plugin[mod_id] != MOD_CSGO)) {
 		return Plugin_Handled;
 	}
 
@@ -5218,17 +5218,25 @@ swap_player(player_index)
 			if (IsPlayerAlive(player_index)) {
 				CS_SwitchTeam(player_index, CS_TEAM_T);
 				CS_RespawnPlayer(player_index);
-				new new_model = GetRandomInt(0, 3);
-				SetEntityModel(player_index, css_ts_models[new_model]);
+				if (gameme_plugin[mod_id] == MOD_CSS) {
+					new new_model = GetRandomInt(0, 3);
+					SetEntityModel(player_index, css_ts_models[new_model]);
+				} else if (gameme_plugin[mod_id] == MOD_CSGO) {
+					CS_UpdateClientModel(player_index);
+				}				
 			} else {
-				CS_SwitchTeam(player_index, CS_TEAM_T);
+				ChangeClientTeam(player_index, CS_TEAM_T);
 			}
 		} else if (strcmp(player_team, "TERRORIST") == 0) {
 			if (IsPlayerAlive(player_index)) {
 				CS_SwitchTeam(player_index, CS_TEAM_CT);
 				CS_RespawnPlayer(player_index);
-				new new_model = GetRandomInt(0, 3);
-				SetEntityModel(player_index, css_ct_models[new_model]);
+				if (gameme_plugin[mod_id] == MOD_CSS) {
+					new new_model = GetRandomInt(0, 3);
+					SetEntityModel(player_index, css_ct_models[new_model]);
+				} else if (gameme_plugin[mod_id] == MOD_CSGO) {
+					CS_UpdateClientModel(player_index);
+				}  				
 				new weapon_entity = GetPlayerWeaponSlot(player_index, 4);
 				if (weapon_entity > 0) {
 					decl String: class_name[32];
@@ -5238,7 +5246,7 @@ swap_player(player_index)
 					}
 				}
 			} else {
-				CS_SwitchTeam(player_index, CS_TEAM_CT);
+				ChangeClientTeam(player_index, CS_TEAM_CT);
 			}
 		}
 	}
