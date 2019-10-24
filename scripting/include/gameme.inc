@@ -45,7 +45,7 @@ forward onGameMEStatsTop10(command, client, String: message_prefix[], &Handle: d
 forward onGameMEStatsNext(command, client, String: message_prefix[], &Handle: datapack);
 
 
-functag gameMEStatsCallback public(command, payload, client, &Handle: datapack);
+typedef gameMEStatsCallback = function Action(command, payload, client, &Handle: datapack);
 /**
  * Query gameME Stats data from a client
  * 
@@ -58,8 +58,7 @@ functag gameMEStatsCallback public(command, payload, client, &Handle: datapack);
 native QueryGameMEStats(String: request[], client, gameMEStatsCallback: callback, payload = 0);
 
 
-functag gameMEStatsTop10Callback public(command, payload, &Handle: datapack);
-
+typedef gameMEStatsTop10Callback = function Action(command, payload, &Handle: datapack);
 /**
  * Query Top10 players from gameME Stats
  * 
@@ -71,9 +70,7 @@ functag gameMEStatsTop10Callback public(command, payload, &Handle: datapack);
  */
 native QueryGameMEStatsTop10(String: request[], client, gameMEStatsTop10Callback: callback, payload = 0);
 
-
-functag gameMEStatsNextCallback public(command, payload, client, &Handle: datapack);
-
+typedef gameMEStatsNextCallback = function Action(command, payload, client, &Handle: datapack);
 /**
  * Query next players from gameME Stats for s specified client
  * 
@@ -86,8 +83,7 @@ functag gameMEStatsNextCallback public(command, payload, client, &Handle: datapa
 native QueryGameMEStatsNext(String: request[], client, gameMEStatsNextCallback: callback, payload = 0);
 
 
-functag gameMEStatsIntCallback public(command, payload, caller[MAXPLAYERS + 1], target[MAXPLAYERS + 1], const String: message_prefix[], const String: message[]);
-
+typedef gameMEStatsIntCallback = function Action(command, payload, caller[MAXPLAYERS + 1], target[MAXPLAYERS + 1], const String: message_prefix[], const String: message[]);
 /**
  * Query internal (preformatted) gameME Stats data
  * 
