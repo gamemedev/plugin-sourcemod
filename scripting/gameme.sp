@@ -33,11 +33,10 @@
 #include <clientprefs>
 #include <sdkhooks>
 #include <tf2_stocks>
-#include <socket>
 
 
 // plugin information
-#define GAMEME_PLUGIN_VERSION "4.9.0"
+#define GAMEME_PLUGIN_VERSION "5.0.0"
 public Plugin:myinfo = {
 	name = "gameME Plugin",
 	author = "TTS Oetzel & Goerz GmbH",
@@ -64,46 +63,39 @@ new String: team_list[16][32];
 
 // gameME Stats
 #define GAMEME_TAG "gameME"
-enum gameme_plugin_data {
-  mod_id,
-  String: game_mod[32],
-  Handle: block_chat_commands,
-  Handle: blocked_commands,
-  Handle: block_chat_commands_values,
-  Handle: message_prefix,
-  String: message_prefix_value[32],
-  Handle: protect_address,
-  String: protect_address_value[32],
-  String: protect_address_port,
-  Handle: display_spectatorinfo,
-  Handle: menu_main,
-  Handle: menu_auto,
-  Handle: menu_events,
-  Handle: player_color_array,
-  Handle: message_recipients,
-  Handle: enable_log_locations,
-  Handle: enable_damage_display,
-  Handle: enable_gameme_live,
-  Handle: gameme_live_address,
-  String: gameme_live_address_value[32],
-  String: gameme_live_address_port,
-  log_locations,
-  damage_display,
-  damage_display_type,
-  live_active, 
-  Float: live_interval,
-  display_spectator,
-  bool: sdkhook_available,
-  EngineVersion: engine_version,
-  bool: ignore_next_tag_change,
-  Handle: custom_tags,
-  Handle: sv_tags,
-  Handle: live_socket,
-  server_port,
-  protobuf
+enum struct gameme_plugin_data {
+  int mod_id;
+  char game_mod[32];
+  Handle block_chat_commands;
+  Handle blocked_commands;
+  Handle block_chat_commands_values;
+  Handle message_prefix;
+  char message_prefix_value[32];
+  Handle protect_address;
+  char protect_address_value[32];
+  int protect_address_port;
+  Handle display_spectatorinfo;
+  Handle menu_main;
+  Handle menu_auto;
+  Handle menu_events;
+  Handle player_color_array;
+  Handle message_recipients;
+  Handle enable_log_locations;
+  Handle enable_damage_display;
+  int log_locations;
+  int damage_display;
+  int damage_display_type;
+  int display_spectator;
+  bool sdkhook_available;
+  EngineVersion engine_version;
+  bool ignore_next_tag_change;
+  Handle custom_tags;
+  Handle sv_tags;
+  int server_port;
+  int protobuf;
 }
-new gameme_plugin[gameme_plugin_data];
 
+new gameme_plugin[gameme_plugin_data];
 
 /**
  *  Spectator Info Display
@@ -258,11 +250,6 @@ new const String: css_weapon_list[][] = { "ak47", "m4a1", "awp", "deagle", "mp5n
 										  "p228", "sg550", "sg552", "tmp", "ump45", "xm1014", "knife",
 										  "smokegrenade", "flashbang" };
 
-enum css_plugin_data {
-	money_offset
-}
-
-new css_data[css_plugin_data];
 
 
 /**
@@ -354,7 +341,7 @@ new hl2mp_players[MAXPLAYERS + 1][hl2mp_player];
 new const String: zps_weapon_list[][] = { "870", "revolver", "ak47", "usp", "glock18c", "glock", "mp5", "m4", "supershorty", "winchester", "ppk"};
 
 enum zps_player {
-	next_hitgroup
+	next_hitgroup_zps
 }
 
 new zps_players[MAXPLAYERS + 1][zps_player];
@@ -499,8 +486,6 @@ public OnPluginStart()
 	gameme_plugin[log_locations]       = 1;
 	gameme_plugin[damage_display]      = 0;
 	gameme_plugin[damage_display_type] = 1;
-	gameme_plugin[live_active]         = 0;
-	gameme_plugin[live_interval]       = 0.2;
 	gameme_plugin[protobuf]            = 0;
 
 	LoadTranslations("gameme.phrases");
@@ -655,10 +640,6 @@ public OnPluginStart()
 	HookConVarChange(gameme_plugin[display_spectatorinfo], OnDisplaySpectatorinfoChange);
 	gameme_plugin[enable_damage_display] = CreateConVar("gameme_damage_display", "0", "If activated the damage summary is display on player_death (1 = menu, 2 = chat)");
 	HookConVarChange(gameme_plugin[enable_damage_display], OnDamageDisplayChange);
-	gameme_plugin[enable_gameme_live] = CreateConVar("gameme_live", "0", "If activated gameME Live! is enabled");
-	HookConVarChange(gameme_plugin[enable_gameme_live], OngameMELiveChange);
-	gameme_plugin[gameme_live_address] = CreateConVar("gameme_live_address", "", "Network address of gameME Live!");
-	HookConVarChange(gameme_plugin[gameme_live_address], OnLiveAddressChange);
 
 	get_server_mod();
 	if (gameme_plugin[mod_id] == MOD_CSGO) {
@@ -773,19 +754,6 @@ public OnPluginStart()
 	}
 
 
-	if (gameme_plugin[gameme_live_address] != INVALID_HANDLE) {
-		decl String: gameme_live_address_cvar_value[32];
-		GetConVarString(gameme_plugin[gameme_live_address], gameme_live_address_cvar_value, 32);
-		if (strcmp(gameme_live_address_cvar_value, "") != 0) {
-			decl String: LiveSplitArray[2][16];
-			new live_split_count = ExplodeString(gameme_live_address_cvar_value, ":", LiveSplitArray, 2, 16);
-			if (live_split_count == 2) {
-				strcopy(gameme_plugin[gameme_live_address_value], 32, LiveSplitArray[0]);
-				gameme_plugin[gameme_live_address_port] = StringToInt(LiveSplitArray[1]);
-			}
-		}
-	}
-
 	new Handle: server_hostport = FindConVar("hostport");          
 	if (server_hostport != INVALID_HANDLE) {
 		decl String: temp_port[16];       
@@ -875,25 +843,6 @@ public OnAllPluginsLoaded()
 	}
 
 
-	if ((gameme_plugin[mod_id] == MOD_CSS) || (gameme_plugin[mod_id] == MOD_CSGO)) {
-		if ((strcmp(gameme_plugin[gameme_live_address_value], "") != 0) &&
-		    (strcmp(gameme_plugin[gameme_live_address_port], "") != 0)) {
-			new enable_gameme_live_cvar = GetConVarInt(gameme_plugin[enable_gameme_live]);
-			if (enable_gameme_live_cvar == 1) {
-				gameme_plugin[live_active] = 1;
-				start_gameme_live();
-				LogToGame("gameME Live! activated");
-			} else if (enable_gameme_live_cvar == 0) {
-				gameme_plugin[live_active] = 0;
-				LogToGame("gameME Live! not active");
-			}
-		} else {
-			gameme_plugin[live_active] = 0;
-			LogToGame("gameME Live! cannot be activated, no gameME Live! address assigned");
-		}
-	}
-	
-	
 	for (new i = 1; i <= MaxClients; i++) {
 		if (IsClientInGame(i)) {
 			if (gameme_plugin[sdkhook_available]) {
@@ -1327,30 +1276,6 @@ public ClientConVar(QueryCookie:cookie, client, ConVarQueryResult:result, const 
 }
 
 
-start_gameme_live()
-{
-	if ((gameme_plugin[mod_id] == MOD_CSS) || (gameme_plugin[mod_id] == MOD_CSGO)) {
-		if (gameme_plugin[live_active] == 1) {
-			if (GetExtensionFileStatus("socket.ext") == 1) {
-				LogToGame("Extension Socket is available");
-				if (gameme_plugin[mod_id] == MOD_CSS) {
-					css_data[money_offset] = FindSendPropInfo("CCSPlayer", "m_iAccount");
-				}
-				gameme_plugin[live_socket] = SocketCreate(SOCKET_UDP, OnSocketError);
-		
-				CreateTimer(gameme_plugin[live_interval], CollectData, 0, TIMER_REPEAT);
-			} else {
-				LogToGame("gameME Live! not activated, Socket extension not available");
-			}
-		}
-	} else {
-		LogToGame("gameME Live! not enabled, not supported yet");
-		gameme_plugin[live_active] = 0;
-	}
-
-}
-
-
 get_weapon_index(const String: weapon_list[][], weapon_list_count, const String: weapon_name[])
 {
 	new loop_break = 0;
@@ -1475,17 +1400,6 @@ reset_player_data(player_index)
 			player_damage[player_index][i][dteamkill]     = 0;
 			player_damage[player_index][i][dweapon]       = 0;
 		}
-	}
-
-	if (gameme_plugin[live_active] == 1) {
-		gameme_players[player_index][parmor]  = 0;
-		gameme_players[player_index][phealth] = 0;
-		gameme_players[player_index][ploc1]   = 0;
-		gameme_players[player_index][ploc2]   = 0;
-		gameme_players[player_index][ploc3]   = 0;
-		gameme_players[player_index][pangle]  = 0;
-		gameme_players[player_index][pmoney]  = 0;
-		gameme_players[player_index][palive]  = 0;
 	}
 
 }
@@ -1621,8 +1535,7 @@ public Action: spectator_player_timer(Handle:timer, any: caller)
 	}
 }
 
-
-public QuerygameMEStatsIntCallback(query_command, query_payload, query_caller[MAXPLAYERS + 1], query_target[MAXPLAYERS + 1], const String: query_message_prefix[], const String: query_message[])
+public Action: QuerygameMEStatsIntCallback(int query_command, int query_payload, int query_caller[MAXPLAYERS + 1], int query_target[MAXPLAYERS + 1], char[] query_message_prefix, char[] query_message)
 {
 	if ((query_caller[0] > 0) && (query_command == RAW_MESSAGE_CALLBACK_INT_SPECTATOR)) {
 		if ((query_payload == QUERY_TYPE_SPECTATOR) && (query_target[0] > 0)) {
@@ -1638,156 +1551,6 @@ public QuerygameMEStatsIntCallback(query_command, query_payload, query_caller[MA
 }
 
 
-public OnSocketError(Handle:socket, const errorType, const errorNum, any: arg) {
-	LogError("socket error %d (errno %d)", errorType, errorNum);
-	CloseHandle(socket);
-	gameme_plugin[live_socket] = SocketCreate(SOCKET_UDP, OnSocketError);
-}
-
-
-public Action:CollectData(Handle:timer, any:index) 
-{
-
-	if ((gameme_plugin[live_active] == 1) && (gameme_plugin[live_socket] != INVALID_HANDLE)) {
-		new String: network_packet[1500];
-
-		for(new i = 1; i <= MaxClients; i++) {
-			new player_index = i;
-			if (IsClientInGame(player_index)) {
-
-				if (gameme_players[player_index][palive] == 1) {
-
-					new Float: player_origin_float[3];
-					GetClientAbsOrigin(player_index, player_origin_float);
-
-					new player_origin[3];
-					player_origin[0] = RoundFloat(player_origin_float[0]);
-					player_origin[1] = RoundFloat(player_origin_float[1]);
-					player_origin[2] = RoundFloat(player_origin_float[2]);
-
-					new Float: player_angles_float[3];
-					GetClientAbsAngles(player_index, player_angles_float);
-					new player_angle;
-					player_angle = RoundFloat(player_angles_float[1]);
-
-					// player movement				
-					if ((player_origin[0] != gameme_players[player_index][ploc1]) ||
-						(player_origin[1] != gameme_players[player_index][ploc2]) ||
-						(player_origin[2] != gameme_players[player_index][ploc3]) ||
-						(player_angle     != gameme_players[player_index][pangle])) {
-
-						gameme_players[player_index][ploc1]  = player_origin[0];
-						gameme_players[player_index][ploc2]  = player_origin[1];
-						gameme_players[player_index][ploc3]  = player_origin[2];
-						gameme_players[player_index][pangle] = player_angle;
-						
-						decl String: send_message[128];
-						Format(send_message, 128, "\255\255R\254%d\254%d\254%d\254%d\254\%d\254%d\254", gameme_plugin[server_port], GetClientUserId(player_index), gameme_players[player_index][ploc1], gameme_players[player_index][ploc2], gameme_players[player_index][ploc3], gameme_players[player_index][pangle]); 
-						// LogToGame("|%s|", send_message);
-						
-						new send_message_len = strlen(send_message);
-						new network_packet_len = strlen(network_packet);
-						if ((network_packet_len + send_message_len) <= 1500) {
-							strcopy(network_packet[network_packet_len], 1500, send_message);
-						} else {
-							if (strcmp(network_packet, "") != 0) {
-								SocketSendTo(gameme_plugin[live_socket], network_packet, strlen(network_packet), gameme_plugin[gameme_live_address_value], gameme_plugin[gameme_live_address_port]);
-								// LogToGame("Send [%s:%d]: |%s|", gameme_plugin[gameme_live_address_value], gameme_plugin[gameme_live_address_port], network_packet);
-								network_packet[0] = '\0';
-								if (strcmp(send_message, "") != 0) {
-									strcopy(network_packet[1], 1500, send_message);
-								}
-							}
-						}
-						
-					}
-					
-
-					new health = GetClientHealth(player_index);
-					new armor  = GetClientArmor(player_index);
-					decl String: player_weapon[32];
-					GetClientWeapon(player_index, player_weapon, 32);
-					new weapon_index;
-					if (gameme_plugin[mod_id] == MOD_CSS) {
-						weapon_index = get_weapon_index(css_weapon_list, MAX_CSS_WEAPON_COUNT, player_weapon[7]);
-					} else if (gameme_plugin[mod_id] == MOD_CSGO) {
-						weapon_index = get_weapon_index(csgo_weapon_list, MAX_CSGO_WEAPON_COUNT, player_weapon[7]);
-					} else {
-						weapon_index = -1;
-					}
-				
-					new money;
-					if (gameme_plugin[mod_id] == MOD_CSS) {
-						if (css_data[money_offset] != -1) {
-							money = GetEntData(player_index, css_data[money_offset]);
-						}
-					} else if (gameme_plugin[mod_id] == MOD_CSGO) {
-						money = 0;
-					} else {
-						money = 0;
-					}
-					
-					
-					
-					// player equipment
-					if ((health != gameme_players[player_index][phealth]) ||
-					 	(armor  != gameme_players[player_index][parmor]) ||
-					 	(money  != gameme_players[player_index][pmoney]) ||
-					 	((weapon_index > -1) && (weapon_index != gameme_players[player_index][pweapon]))) {
-
-						// LogToGame("Health (%d): %d, %d", player_index, health, gameme_players[player_index][phealth]); 
-						// LogToGame("Armor  (%d): %d, %d", player_index, armor,  gameme_players[player_index][parmor]); 
-						// LogToGame("Money  (%d): %d, %d", player_index, money, gameme_players[player_index][pmoney]); 
-						// LogToGame("Weapon (%d): %d, %d", player_index, weapon_index, gameme_players[player_index][pweapon]); 
-
-						gameme_players[player_index][phealth] = health;
-						gameme_players[player_index][parmor]  = armor;
-						gameme_players[player_index][pmoney]  = money;
-						gameme_players[player_index][pweapon] = weapon_index;
-						
-						new String: weapon_name[32];
-						if (gameme_players[player_index][pweapon] > -1) {
-							if (gameme_plugin[mod_id] == MOD_CSS) {
-								Format(weapon_name, 32, css_weapon_list[gameme_players[player_index][pweapon]]);
-							} else if (gameme_plugin[mod_id] == MOD_CSGO) {
-								Format(weapon_name, 32, csgo_weapon_list[gameme_players[player_index][pweapon]]);
-							} 
-						}
-						
-						decl String: send_message[128];
-						Format(send_message, 128, "\255\255S\254%d\254%d\254%d\254%d\254%s\254%d\254", gameme_plugin[server_port], GetClientUserId(player_index), gameme_players[player_index][phealth], gameme_players[player_index][parmor], weapon_name, gameme_players[player_index][pmoney]);
-						// LogToGame("|%s|", send_message);
-						
-						new send_message_len = strlen(send_message);
-						new network_packet_len = strlen(network_packet);
-						if ((network_packet_len + send_message_len) <= 1500) {
-							strcopy(network_packet[network_packet_len], 1500, send_message);
-						} else {
-							if (strcmp(network_packet, "") != 0) {
-								SocketSendTo(gameme_plugin[live_socket], network_packet, strlen(network_packet), gameme_plugin[gameme_live_address_value], gameme_plugin[gameme_live_address_port]);
-								// LogToGame("Send [%s:%d]: |%s|", gameme_plugin[gameme_live_address_value], gameme_plugin[gameme_live_address_port], network_packet);
-								network_packet[0] = '\0';
-								if (strcmp(send_message, "") != 0) {
-									strcopy(network_packet[1], 1500, send_message);
-								}
-							}
-						}
-
-					}
-				}
-			}
-		}
-		
-		if (strcmp(network_packet, "") != 0) {
-			SocketSendTo(gameme_plugin[live_socket], network_packet, strlen(network_packet), gameme_plugin[gameme_live_address_value], gameme_plugin[gameme_live_address_port]);
-			// LogToGame("Send [%s:%d]: |%s|", gameme_plugin[gameme_live_address_value], gameme_plugin[gameme_live_address_port], network_packet);
-		}
-		
-	}
-
-}
-
-
 public PanelDamageHandler(Handle:menu, MenuAction:action, param1, param2)
 {
 }
@@ -1800,7 +1563,7 @@ public build_damage_panel(player_index)
 		return ;
 	}
 
-	new max_clients = GetMaxClients();
+	new max_clients = MaxClients;
 
 	new String: attacked[8][128];
 	new attacked_index = 0;
@@ -1998,7 +1761,7 @@ public build_damage_chat(player_index)
 		return ;
 	}
 
-	new max_clients = GetMaxClients();
+	new max_clients = MaxClients;
 	decl String: killed_message[192];
 	new killer_index = 0;
 
@@ -2884,11 +2647,6 @@ public Event_CSGORoundStart(Handle: event, const String: name[], bool:dontBroadc
 			}
 		}
 	}
-	if (gameme_plugin[live_active] == 1) {
-		for (new i = 1; (i <= MaxClients); i++) {
-			gameme_players[i][palive] = 1;
-		}
-	}
 }
 
 
@@ -2909,11 +2667,6 @@ public Event_CSSRoundStart(Handle: event, const String: name[], bool:dontBroadca
 			if ((i > 0) && (IsClientInGame(i)) && (!IsFakeClient(i)) && (IsClientObserver(i))) {
 				gameme_players[i][pspectator][stimer] = CreateTimer(SPECTATOR_TIMER_INTERVAL, spectator_player_timer, i, TIMER_REPEAT | TIMER_FLAG_NO_MAPCHANGE);
 			}
-		}
-	}
-	if (gameme_plugin[live_active] == 1) {
-		for (new i = 1; (i <= MaxClients); i++) {
-			gameme_players[i][palive] = 1;
 		}
 	}
 }
@@ -3358,66 +3111,6 @@ public OnDamageDisplayChange(Handle:cvar, const String:oldVal[], const String:ne
 					gameme_plugin[damage_display] = 0;
 				}
 
-			}
-		}
-	}
-}
-
-
-public OngameMELiveChange(Handle:cvar, const String:oldVal[], const String:newVal[])
-{
-	if (strcmp(newVal, "") != 0) {
-		if ((strcmp(newVal, "0") == 0) || (strcmp(newVal, "1") == 0)) {
-
-			if (((strcmp(newVal, "1") == 0) && (strcmp(oldVal, "1") != 0)) ||
-			   ((strcmp(newVal, "0") == 0) && (strcmp(oldVal, "0") != 0))) {
-
-				if (gameme_plugin[enable_gameme_live] != INVALID_HANDLE) {
-					if ((gameme_plugin[mod_id] == MOD_CSS) || (gameme_plugin[mod_id] == MOD_CSGO)) {
-						if ((strcmp(gameme_plugin[gameme_live_address_value], "") != 0) &&
-		    				(strcmp(gameme_plugin[gameme_live_address_port], "") != 0)) {
-							new enable_gameme_live_cvar = GetConVarInt(gameme_plugin[enable_gameme_live]);
-							if (enable_gameme_live_cvar == 1) {
-								gameme_plugin[live_active] = 1;
-								start_gameme_live();
-								LogToGame("gameME Live! activated");
-							} else if (enable_gameme_live_cvar == 0) {
-								gameme_plugin[live_active] = 0;
-								if (gameme_plugin[live_socket] != INVALID_HANDLE) {
-									CloseHandle(gameme_plugin[live_socket]);
-								}
-								LogToGame("gameME Live! disabled");
-							}
-						} else {
-							if (strcmp(newVal, "1") == 0) {
-								SetConVarInt(gameme_plugin[enable_gameme_live], 0);
-							} else {
-								LogToGame("gameME Live! cannot be activated, no gameME Live! address assigned");
-							}
-							gameme_plugin[live_active] = 0;
-						}
-					}
-				}
-			}
-		}
-	}
-}
-
-
-public OnLiveAddressChange(Handle:cvar, const String:oldVal[], const String:newVal[])
-{
-
-	if (strcmp(newVal, "") != 0) {
-		if (gameme_plugin[gameme_live_address] != INVALID_HANDLE) {
-			decl String: gameme_live_cvar_value[32];
-			GetConVarString(gameme_plugin[gameme_live_address], gameme_live_cvar_value, 32);
-			if (strcmp(gameme_live_cvar_value, "") != 0) {
-				decl String: SplitArray[2][16];
-				new split_count = ExplodeString(gameme_live_cvar_value, ":", SplitArray, 2, 16);
-				if (split_count == 2) {
-					strcopy(gameme_plugin[gameme_live_address_value], 32, SplitArray[0]);
-					gameme_plugin[gameme_live_address_port] = StringToInt(SplitArray[1]);
-				}
 			}
 		}
 	}
@@ -5036,7 +4729,7 @@ public Action: gameME_Event_PlyDeath(Handle: event, const String: name[], bool:d
 		}
 
 		if (gameme_plugin[mod_id] == MOD_ZPS) {
-			if (zps_players[victim][next_hitgroup] == HITGROUP_HEAD) {
+			if (zps_players[victim][next_hitgroup_zps] == HITGROUP_HEAD) {
 				log_player_event(attacker, "triggered", "headshot");
 			}		
 		}
@@ -5958,11 +5651,6 @@ public Event_TF2PlayerSpawn(Handle: event, const String: name[], bool:dontBroadc
 
 public Event_TF2RoundStart(Handle: event, const String: name[], bool:dontBroadcast)
 {
-	if (gameme_plugin[live_active] == 1) {
-		for (new i = 0; (i <= MAXPLAYERS); i++) {
-			gameme_players[i][palive] = 1;
-		}
-	}
 }
 
 
@@ -6331,7 +6019,7 @@ public OnZPSFireBullets(attacker, shots, String: weapon[])
 public OnZPSTraceAttack(victim, attacker, inflictor, Float:damage, damagetype, ammotype, hitbox, hitgroup)
 {
 	if ((hitgroup > 0) && (attacker > 0) && (attacker <= MaxClients) && (victim > 0) && (victim <= MaxClients)) {
-		zps_players[victim][next_hitgroup] = hitgroup;
+		zps_players[victim][next_hitgroup_zps] = hitgroup;
 	}
 }
 
@@ -6339,7 +6027,7 @@ public OnZPSTraceAttack(victim, attacker, inflictor, Float:damage, damagetype, a
 public OnZPSTakeDamage(victim, attacker, inflictor, Float:damage, damagetype)
 {	
 	if ((attacker > 0) && (attacker <= MaxClients) && (victim > 0) && (victim <= MaxClients)) {
-		new hitgroup = zps_players[victim][next_hitgroup];
+		new hitgroup = zps_players[victim][next_hitgroup_zps];
 		if (hitgroup < 8) {
 			hitgroup += LOG_HIT_OFFSET;
 		}
@@ -6356,7 +6044,7 @@ public OnZPSTakeDamage(victim, attacker, inflictor, Float:damage, damagetype)
 				player_weapons[attacker][weapon_index][wheadshots]++;
 			}
 		}
-		zps_players[victim][next_hitgroup] = 0;
+		zps_players[victim][next_hitgroup_zps] = 0;
 	}
 }
 
