@@ -456,19 +456,19 @@ enum struct tf2_plugin_data {
 tf2_plugin_data tf2_data;
 
 
-enum tf2_player {
-	player_loadout0[TF2_MAX_LOADOUT_SLOTS],
-	player_loadout1[TF2_MAX_LOADOUT_SLOTS],
-	bool: player_loadout_updated,
-	Handle: object_list,
-	Float: object_removed,
-	jump_status,
-	Float: dalokohs,
-	TFClassType: player_class,
-	bool: carry_object
+enum struct tf2_player {
+	int player_loadout0[TF2_MAX_LOADOUT_SLOTS];
+	int player_loadout1[TF2_MAX_LOADOUT_SLOTS];
+	bool player_loadout_updated;
+	Handle object_list;
+	float object_removed;
+	int jump_status;
+	float dalokohs;
+	TFClassType player_class;
+	bool carry_object;
 }
 
-new tf2_players[MAXPLAYERS + 1][tf2_player];
+tf2_player tf2_players[MAXPLAYERS + 1];
 
 
 /**
@@ -759,9 +759,9 @@ public OnPluginStart()
 			SetTrieValue(tf2_data.slots_trie, "misc", 7);
 
 			for (new i = 0; (i <= MAXPLAYERS); i++) {
-				tf2_players[i][object_list]  = CreateStack(); 
-				tf2_players[i][carry_object] = false; 
-				tf2_players[i][jump_status]  = 0;
+				tf2_players[i].object_list  = CreateStack(); 
+				tf2_players[i].carry_object = false; 
+				tf2_players[i].jump_status  = 0;
 			}
 			
 			init_tf2_weapon_trie();
@@ -894,14 +894,14 @@ public OnAllPluginsLoaded()
 						SDKHook(i, SDKHook_OnTakeDamagePost, OnTF2TakeDamage_Post);
 						SDKHook(i, SDKHook_OnTakeDamage, 	 OnTF2TakeDamage);
 
-						tf2_players[i][player_loadout_updated] = true;
-						tf2_players[i][carry_object] = false;
-						tf2_players[i][object_removed] = 0.0;
-						tf2_players[i][player_class] = TFClass_Unknown;
+						tf2_players[i].player_loadout_updated = true;
+						tf2_players[i].carry_object = false;
+						tf2_players[i].object_removed = 0.0;
+						tf2_players[i].player_class = TFClass_Unknown;
 
 						for (new j = 0; j < TF2_MAX_LOADOUT_SLOTS; j++) {
-							tf2_players[i][player_loadout0][j] = -1;
-							tf2_players[i][player_loadout1][j] = -1;
+							tf2_players[i].player_loadout0[j] = -1;
+							tf2_players[i].player_loadout1[j] = -1;
 						}
 
 					}
@@ -1264,14 +1264,14 @@ public OnClientPutInServer(client)
 					SDKHook(client, SDKHook_OnTakeDamagePost, OnTF2TakeDamage_Post);
 					SDKHook(client, SDKHook_OnTakeDamage, 	  OnTF2TakeDamage);
 			
-					tf2_players[client][player_loadout_updated] = true;
-					tf2_players[client][carry_object] = false;
-					tf2_players[client][object_removed] = 0.0;
-					tf2_players[client][player_class] = TFClass_Unknown;
+					tf2_players[client].player_loadout_updated = true;
+					tf2_players[client].carry_object = false;
+					tf2_players[client].object_removed = 0.0;
+					tf2_players[client].player_class = TFClass_Unknown;
 
 					for (new i = 0; (i < TF2_MAX_LOADOUT_SLOTS); i++) {
-						tf2_players[client][player_loadout0][i] = -1;
-						tf2_players[client][player_loadout1][i] = -1;
+						tf2_players[client].player_loadout0[i] = -1;
+						tf2_players[client].player_loadout1[i] = -1;
 					}
 				}
 			}
@@ -1385,10 +1385,10 @@ get_tf2_weapon_index(const String: weapon_name[], client = 0, weapon = -1)
 
 		if ((unlockable_weapon) && (client > 0)) {
 			new slot = 0;
-			if (tf2_players[client][player_class] == TFClass_DemoMan) {
+			if (tf2_players[client].player_class == TFClass_DemoMan) {
 				slot = 1;
 			}
-			new item_index = tf2_players[client][player_loadout0][slot];
+			new item_index = tf2_players[client].player_loadout0[slot];
 			switch (item_index) {
 				case 36, 41, 45, 61, 127, 130:
 					weapon_index++;
@@ -2954,8 +2954,8 @@ public Event_TF2PlayerDeath(Handle: event, const String: name[], bool:dontBroadc
 
 	if ((attacker > 0) && (victim > 0) && (attacker <= MaxClients)) {
 
-		tf2_players[victim][jump_status] = TF2_JUMP_NONE;
-		tf2_players[victim][carry_object] = false;
+		tf2_players[victim].jump_status = TF2_JUMP_NONE;
+		tf2_players[victim].carry_object = false;
 
 		new custom_kill = GetEventInt(event, "customkill");
 		if (custom_kill > 0) {
@@ -2976,7 +2976,7 @@ public Event_TF2PlayerDeath(Handle: event, const String: name[], bool:dontBroadc
 		}
 
 		if (attacker != victim) {
-			switch(tf2_players[attacker][jump_status]) {
+			switch(tf2_players[attacker].jump_status) {
 				case 2:
 					log_player_event(attacker, "triggered", "rocket_jump_kill");
 				case 3:
@@ -3071,14 +3071,14 @@ public OnGameFrame()
 							KvGetString(tf2_data.items_kv, "item_slot", tmp_str, 16);
 							new slot;
 							if (GetTrieValue(tf2_data.slots_trie, tmp_str, slot)) {
-								if ((slot == 0) && (tf2_players[owner][player_class] == TFClass_DemoMan)) {
+								if ((slot == 0) && (tf2_players[owner].player_class == TFClass_DemoMan)) {
 									slot++;
 								}
-								if (tf2_players[owner][player_loadout0][slot] != item_index) {
-									tf2_players[owner][player_loadout0][slot] = item_index;
-									tf2_players[owner][player_loadout_updated] = true;
+								if (tf2_players[owner].player_loadout0[slot] != item_index) {
+									tf2_players[owner].player_loadout0[slot] = item_index;
+									tf2_players[owner].player_loadout_updated = true;
 								}
-								tf2_players[owner][player_loadout1][slot] = entity;
+								tf2_players[owner].player_loadout1[slot] = entity;
 							}
 							KvGoBack(tf2_data.items_kv);
 						}
@@ -3089,7 +3089,7 @@ public OnGameFrame()
 			new client_count = GetClientCount();
 			for (new i = 1; i <= client_count; i++) {
 				if ((IsClientInGame(i)) && (GetEntData(i, tf2_data.carry_offset, 1))) {
-					tf2_players[i][carry_object] = true;
+					tf2_players[i].carry_object = true;
 				}
 			}
 
@@ -5610,16 +5610,16 @@ public Action: Event_TF2ShieldBlocked(UserMsg:msg_id, Handle:bf, const players[]
 
 public Action: Event_TF2SoundHook(clients[64], &numClients, String: sample[PLATFORM_MAX_PATH], &entity, &channel, &Float:volume, &level, &pitch, &flags)
 {
-	if ((entity <= MaxClients) &&(clients[0] == entity) && (tf2_players[entity][player_class] == TFClass_Heavy) && (StrEqual(sample, "vo/SandwichEat09.wav"))) {
+	if ((entity <= MaxClients) &&(clients[0] == entity) && (tf2_players[entity].player_class == TFClass_Heavy) && (StrEqual(sample, "vo/SandwichEat09.wav"))) {
 		
-		switch (tf2_players[entity][player_loadout0][1]) {
+		switch (tf2_players[entity].player_loadout0[1]) {
 			case TF2_LUNCHBOX_CHOCOLATE: {
 				log_player_event(entity, "triggered", "dalokohs");
 				new Float: time = GetGameTime();
-				if ((time - tf2_players[entity][dalokohs]) > 30) {
+				if ((time - tf2_players[entity].dalokohs) > 30) {
 					log_player_event(entity, "triggered", "dalokohs_healthboost");
 				}
-				tf2_players[entity][dalokohs] = time;
+				tf2_players[entity].dalokohs = time;
 				if (GetClientHealth(entity) < 350) {
 					log_player_event(entity, "triggered", "dalokohs_healself");
 				}
@@ -5711,8 +5711,8 @@ public Action: Event_TF2PlayerBuiltObjectPre(Handle: event, const String: name[]
 {
 	new client = GetClientOfUserId(GetEventInt(event, "userid"));
 	if (client > 0) {
-		if (tf2_players[client][carry_object]) {
-			tf2_players[client][carry_object] = false;
+		if (tf2_players[client].carry_object) {
+			tf2_players[client].carry_object = false;
 			tf2_data.block_next_logging = true;
 		} else {
 			if (GetEntProp(GetEventInt(event, "index"), Prop_Send, "m_bMiniBuilding", 1)) {
@@ -5736,13 +5736,13 @@ public Event_TF2PlayerSpawn(Handle: event, const String: name[], bool:dontBroadc
 	new client = GetClientOfUserId(userid);
 	new TFClassType: spawn_class = TFClassType: GetEventInt(event, "class");
 
-	tf2_players[client][jump_status] = TF2_JUMP_NONE;
+	tf2_players[client].jump_status = TF2_JUMP_NONE;
 	dump_player_data(client);
 
-	if (time == tf2_players[client][object_removed]) {
+	if (time == tf2_players[client].object_removed) {
 		new obj_type;
 		decl String: obj_name[24];
-		while (PopStackCell(tf2_players[client][object_list], obj_type)) {
+		while (PopStackCell(tf2_players[client].object_list, obj_type)) {
 			switch (obj_type) {
 				case TF2_OBJ_DISPENSER:
 					obj_name = "OBJ_DISPENSER";
@@ -5761,8 +5761,8 @@ public Event_TF2PlayerSpawn(Handle: event, const String: name[], bool:dontBroadc
 		}
 	}
 	
-	tf2_players[client][player_class] = spawn_class;
-	tf2_players[client][dalokohs] = -30.0;
+	tf2_players[client].player_class = spawn_class;
+	tf2_players[client].dalokohs = -30.0;
 }
 
 
@@ -5785,9 +5785,9 @@ public Event_TF2ObjectRemoved(Handle: event, const String: name[], bool:dontBroa
 	new userid = GetEventInt(event, "userid");
 	new client = GetClientOfUserId(userid);
 
-	if (time != tf2_players[client][object_removed]) {
-		tf2_players[client][object_removed] = time;
-		while (PopStack(tf2_players[client][object_list])) {
+	if (time != tf2_players[client].object_removed) {
+		tf2_players[client].object_removed = time;
+		while (PopStack(tf2_players[client].object_list)) {
 			continue;
 		}
 	}
@@ -5796,7 +5796,7 @@ public Event_TF2ObjectRemoved(Handle: event, const String: name[], bool:dontBroa
 	if ((IsValidEdict(obj_index)) && (GetEntProp(GetEventInt(event, "index"), Prop_Send, "m_bMiniBuilding", 1))) {
 		obj_type = TF2_OBJ_SENTRYGUN_MINI;
 	}
-	PushStackCell(tf2_players[client][object_list], obj_type);
+	PushStackCell(tf2_players[client].object_list, obj_type);
 }
 
 
@@ -5815,34 +5815,34 @@ public Action: check_player_loadout(Handle: timer, any: userid)
 	
 	new bool: is_new_loadout = false;
 	for (new check_slot = 0; check_slot <= 5; check_slot++) {
-		if ((tf2_players[client][player_loadout1][check_slot] != 0) && (IsValidEntity(tf2_players[client][player_loadout1][check_slot]))) {
+		if ((tf2_players[client].player_loadout1[check_slot] != 0) && (IsValidEntity(tf2_players[client].player_loadout1[check_slot]))) {
 			continue;
 		}
 		new entity = GetPlayerWeaponSlot(client, check_slot);
 		if (entity == -1) {
-			if ((gameme_plugin.sdkhook_available) && (check_slot < 3) && ((tf2_players[client][player_class] == TFClass_Soldier) || (tf2_players[client][player_class] == TFClass_DemoMan))) {
-				tf2_players[client][player_loadout1][check_slot] = -1;
+			if ((gameme_plugin.sdkhook_available) && (check_slot < 3) && ((tf2_players[client].player_class == TFClass_Soldier) || (tf2_players[client].player_class == TFClass_DemoMan))) {
+				tf2_players[client].player_loadout1[check_slot] = -1;
 				continue;
 			}
-			if (tf2_players[client][player_loadout0][check_slot] == -1) {
+			if (tf2_players[client].player_loadout0[check_slot] == -1) {
 				continue;
 			}
-			tf2_players[client][player_loadout0][check_slot] = -1;
-			tf2_players[client][player_loadout1][check_slot] = -1;
+			tf2_players[client].player_loadout0[check_slot] = -1;
+			tf2_players[client].player_loadout1[check_slot] = -1;
 			is_new_loadout = true;
 		} else {
 			new item_index = GetEntProp(entity, Prop_Send, "m_iItemDefinitionIndex");
-			if (tf2_players[client][player_loadout0][check_slot] != item_index) {
-				tf2_players[client][player_loadout0][check_slot] = item_index;
+			if (tf2_players[client].player_loadout0[check_slot] != item_index) {
+				tf2_players[client].player_loadout0[check_slot] = item_index;
 				is_new_loadout = true;
 			}
-			tf2_players[client][player_loadout1][check_slot] = EntIndexToEntRef(entity);
+			tf2_players[client].player_loadout1[check_slot] = EntIndexToEntRef(entity);
 		}
 	}
 	
 	if (gameme_plugin.sdkhook_available) {
 		if (is_new_loadout) {
-			tf2_players[client][player_loadout_updated] = true;
+			tf2_players[client].player_loadout_updated = true;
 		}
 		CreateTimer(0.2, log_weapon_loadout, userid);
 	} else {
@@ -5859,17 +5859,18 @@ public Action: log_weapon_loadout(Handle: timer, any: userid)
 	new client = GetClientOfUserId(userid);
 	if ((client > 0) && (IsClientInGame(client))) {
 		for (new i = 0; i < TF2_MAX_LOADOUT_SLOTS; i++) {
-			if ((tf2_players[client][player_loadout0][i] != -1) && (!IsValidEntity(tf2_players[client][player_loadout1][i])) || (tf2_players[client][player_loadout1][i] == 0)) {
-				tf2_players[client][player_loadout0][i] = -1;
-				tf2_players[client][player_loadout1][i] = -1;
-				tf2_players[client][player_loadout_updated] = true;
+			if ((tf2_players[client].player_loadout0[i] != -1) && (!IsValidEntity(tf2_players[client].player_loadout1[i])) || (tf2_players[client].player_loadout1[i] == 0)) {
+				tf2_players[client].player_loadout0[i] = -1;
+				tf2_players[client].player_loadout1[i] = -1;
+				tf2_players[client].player_loadout_updated = true;
 			}
+			
 		}
-		if (tf2_players[client][player_loadout_updated] == false) {
+		if (tf2_players[client].player_loadout_updated == false) {
 			return Plugin_Stop;
 		}
-		tf2_players[client][player_loadout_updated] = false;
-		LogToGame("\"%L\" %s \"%s\" (primary \"%d\") (secondary \"%d\") (melee \"%d\") (pda \"%d\") (pda2 \"%d\") (building \"%d\") (head \"%d\") (misc \"%d\")", client, "triggered", "player_loadout", tf2_players[client][player_loadout0][0], tf2_players[client][player_loadout0][1], tf2_players[client][player_loadout0][2], tf2_players[client][player_loadout0][3], tf2_players[client][player_loadout0][4], tf2_players[client][player_loadout0][5], tf2_players[client][player_loadout0][6], tf2_players[client][player_loadout0][7]); 
+		tf2_players[client].player_loadout_updated = false;
+		LogToGame("\"%L\" %s \"%s\" (primary \"%d\") (secondary \"%d\") (melee \"%d\") (pda \"%d\") (pda2 \"%d\") (building \"%d\") (head \"%d\") (misc \"%d\")", client, "triggered", "player_loadout", tf2_players[client].player_loadout0[0], tf2_players[client].player_loadout0[1], tf2_players[client].player_loadout0[2], tf2_players[client].player_loadout0[3], tf2_players[client].player_loadout0[4], tf2_players[client].player_loadout0[5], tf2_players[client].player_loadout0[6], tf2_players[client].player_loadout0[7]); 
 	}
 	return Plugin_Stop;
 }
@@ -5884,19 +5885,19 @@ public Action: OnTF2TakeDamage(victim, &attacker, &inflictor, &Float:damage, &da
 			switch(weapon_str[14]) {
 				case 'r': {
 					log_player_event(attacker, "triggered", "airshot_rocket");
-					if (tf2_players[attacker][jump_status] == TF2_JUMP_ROCKET) {
+					if (tf2_players[attacker].jump_status == TF2_JUMP_ROCKET) {
 						log_player_event(attacker, "triggered", "air2airshot_rocket");
 					}
 				}
 				case 'p': {
 					if (weapon_str[18] != 0) {
 						log_player_event(attacker, "triggered", "airshot_sticky");
-						if (tf2_players[attacker][jump_status] == TF2_JUMP_STICKY) {
+						if (tf2_players[attacker].jump_status == TF2_JUMP_STICKY) {
 							log_player_event(attacker, "triggered", "air2airshot_sticky");
 						}
 					} else {
 						log_player_event(attacker, "triggered", "airshot_pipebomb");
-						if (tf2_players[attacker][jump_status] == TF2_JUMP_STICKY) {
+						if (tf2_players[attacker].jump_status == TF2_JUMP_STICKY) {
 							log_player_event(attacker, "triggered", "air2airshot_pipebomb");
 						}
 					}
@@ -5959,12 +5960,11 @@ public Event_TF2RocketJump(Handle:event, const String:name[], bool:dontBroadcast
 {
 	new client = GetClientOfUserId(GetEventInt(event, "userid"));
 	if (client > 0) {
-		new status = tf2_players[client][jump_status];
-		if (status == TF2_JUMP_ROCKET_START) {
-			tf2_players[client][jump_status] = TF2_JUMP_ROCKET;
+		if (tf2_players[client].jump_status == TF2_JUMP_ROCKET_START) {
+			tf2_players[client].jump_status = TF2_JUMP_ROCKET;
 			log_player_event(client, "triggered", "rocket_jump");
-		} else if (status != TF2_JUMP_ROCKET) {
-			tf2_players[client][jump_status] = TF2_JUMP_ROCKET_START;
+		} else if (tf2_players[client].jump_status != TF2_JUMP_ROCKET) {
+			tf2_players[client].jump_status = TF2_JUMP_ROCKET_START;
 		}
 	}
 }
@@ -5974,8 +5974,8 @@ public Event_TF2StickyJump(Handle:event, const String:name[], bool:dontBroadcast
 {
 	new client = GetClientOfUserId(GetEventInt(event, "userid"));
 	if (client > 0) {
-		if (tf2_players[client][jump_status] != TF2_JUMP_STICKY) {
-			tf2_players[client][jump_status] = TF2_JUMP_STICKY;
+		if (tf2_players[client].jump_status != TF2_JUMP_STICKY) {
+			tf2_players[client].jump_status = TF2_JUMP_STICKY;
 			log_player_event(client, "triggered", "sticky_jump");
 		}
 	}
@@ -5986,8 +5986,7 @@ public Event_TF2JumpLanded(Handle:event, const String:name[], bool:dontBroadcast
 {
 	new client = GetClientOfUserId(GetEventInt(event, "userid"));
 	if (client > 0) {
-		tf2_players[client][jump_status] = TF2_JUMP_NONE;
-		
+		tf2_players[client].jump_status = TF2_JUMP_NONE;
 	}
 }
 
