@@ -102,11 +102,11 @@ gameme_plugin_data gameme_plugin;
  *  Spectator Info Display
  */
 
-#define SPECTATOR_TIMER_INTERVAL 	0.5
-#define SPECTATOR_NONE 				0
-#define SPECTATOR_FIRSTPERSON 		4
-#define SPECTATOR_3RDPERSON 		5
-#define SPECTATOR_FREELOOK	 		6
+#define SPECTATOR_TIMER_INTERVAL	0.5
+#define SPECTATOR_NONE				0
+#define SPECTATOR_FIRSTPERSON		4
+#define SPECTATOR_3RDPERSON			5
+#define SPECTATOR_FREELOOK			6
 #define QUERY_TYPE_UNKNOWN			0
 #define QUERY_TYPE_SPECTATOR		1001
 
@@ -185,20 +185,18 @@ weapon_data player_weapons[MAXPLAYERS + 1][MAX_LOG_WEAPONS];
 /**
  *  Damage tracking
  */
-
-#define	DAMAGE_HITS    	     0
-#define	DAMAGE_KILLED	     1
-#define	DAMAGE_HEADSHOT		 2
-#define	DAMAGE_DAMAGE   	 3
-#define	DAMAGE_KILLER	     4
-#define	DAMAGE_HPLEFT    	 5
-#define	DAMAGE_TEAMKILL 	 6
-#define	DAMAGE_WEAPON    	 7
-#define	DAMAGE_WEAPONKILLER  8
-
-enum damage_data {dhits, dkills, dheadshots, ddamage, dkiller, dhpleft, dteamkill, dweapon}
+enum struct damage_data {
+	int dhits;
+	int dkills;
+	int dheadshots;
+	int ddamage;
+	int dkiller;
+	int dhpleft;
+	int dteamkill;
+	int dweapon;
+}
 	
-new player_damage[MAXPLAYERS + 1][MAXPLAYERS + 1][damage_data];
+damage_data player_damage[MAXPLAYERS + 1][MAXPLAYERS + 1];
 
 
 /**
@@ -327,11 +325,11 @@ new const String: l4d_weapon_list[][] = { "rifle", "autoshotgun", "pumpshotgun",
 										  "splitter_claw", "charger_claw"										  
 										  };
  
-enum l4dii_plugin_data {
-	active_weapon_offset
+enum struct l4dii_plugin_data {
+	int active_weapon_offset;
 }
 
-new l4dii_data[l4dii_plugin_data];
+l4dii_plugin_data l4dii_data;
 
 
 /**
@@ -343,21 +341,22 @@ new const String: hl2mp_weapon_list[][] = { "crossbow_bolt", "smg1", "357", "sho
 
 #define HL2MP_CROSSBOW 0
 
-enum hl2mp_plugin_data {
-	Handle: teamplay,
-	bool: teamplay_enabled,
-	Handle: boltchecks,
-	crossbow_owner_offset
+enum struct hl2mp_plugin_data {
+	Handle teamplay;
+	bool teamplay_enabled;
+	Handle boltchecks;
+	int crossbow_owner_offset;
 }
 
-new hl2mp_data[hl2mp_plugin_data];
+hl2mp_plugin_data hl2mp_data;
 
-enum hl2mp_player {
-	next_hitgroup,
-	nextbow_hitgroup
+
+enum struct hl2mp_player {
+	int next_hitgroup;
+	int nextbow_hitgroup;
 }
 
-new hl2mp_players[MAXPLAYERS + 1][hl2mp_player];
+hl2mp_player hl2mp_players[MAXPLAYERS + 1];
 
 
 /**
@@ -367,11 +366,11 @@ new hl2mp_players[MAXPLAYERS + 1][hl2mp_player];
 #define MAX_ZPS_WEAPON_COUNT 11
 new const String: zps_weapon_list[][] = { "870", "revolver", "ak47", "usp", "glock18c", "glock", "mp5", "m4", "supershorty", "winchester", "ppk"};
 
-enum zps_player {
-	next_hitgroup_zps
+enum struct zps_player {
+	int next_hitgroup_zps;
 }
 
-new zps_players[MAXPLAYERS + 1][zps_player];
+zps_player zps_players[MAXPLAYERS + 1];
 
 
 /**
@@ -381,11 +380,11 @@ new zps_players[MAXPLAYERS + 1][zps_player];
 #define MAX_INSMOD_WEAPON_COUNT 30
 new const String: insmod_weapon_list[][] = {"ak74", "akm", "aks74u", "fal", "m14", "m16a4", "m1911", "m1a1", "m249", "m40a1", "m45", "m4a1", "m590", "m9", "makarov", "mini14", "mk18", "mosin", "mp40", "mp5", "rpk", "sks", "toz", "ump45", "galil", "galil_sar", "sterling", "model10", "l1a1", "gurkha"}; 
 
-enum insmod_player {
-	String: last_role[64]
+enum struct insmod_player {
+	char last_role[64];
 }
 
-new insmod_players[MAXPLAYERS + 1][insmod_player];
+insmod_player insmod_players[MAXPLAYERS + 1];
 
 
 /**
@@ -728,16 +727,16 @@ public OnPluginStart()
 	
 	switch (gameme_plugin.mod_id) {
 		case MOD_L4DII: {
-			l4dii_data[active_weapon_offset] = FindSendPropInfo("CTerrorPlayer", "m_hActiveWeapon");
+			l4dii_data.active_weapon_offset = FindSendPropInfo("CTerrorPlayer", "m_hActiveWeapon");
 		}
 		case MOD_HL2MP: {
-			hl2mp_data[crossbow_owner_offset] = FindSendPropInfo("CCrossbowBolt", "m_hOwnerEntity");
-			hl2mp_data[teamplay] = FindConVar("mp_teamplay");
-			if (hl2mp_data[teamplay] != INVALID_HANDLE) {
-				hl2mp_data[teamplay_enabled] = GetConVarBool(hl2mp_data[teamplay]);
-				HookConVarChange(hl2mp_data[teamplay], OnTeamPlayChange);
+			hl2mp_data.crossbow_owner_offset = FindSendPropInfo("CCrossbowBolt", "m_hOwnerEntity");
+			hl2mp_data.teamplay = FindConVar("mp_teamplay");
+			if (hl2mp_data.teamplay != INVALID_HANDLE) {
+				hl2mp_data.teamplay_enabled = GetConVarBool(hl2mp_data.teamplay);
+				HookConVarChange(hl2mp_data.teamplay, OnTeamPlayChange);
 			}
-			hl2mp_data[boltchecks] = CreateStack();
+			hl2mp_data.boltchecks = CreateStack();
 		}
 		case MOD_TF2: {
 			tf2_data[critical_hits] = FindConVar("tf_weapon_criticals");
@@ -1425,14 +1424,14 @@ reset_player_data(player_index)
 
 	if (gameme_plugin.damage_display == 1) {
 		for (new i = 1; (i <= MaxClients); i++) {
-			player_damage[player_index][i][dhits]         = 0;
-			player_damage[player_index][i][dkills]        = 0;
-			player_damage[player_index][i][dheadshots]    = 0;
-			player_damage[player_index][i][ddamage]       = 0;
-			player_damage[player_index][i][dkiller]       = 0;
-			player_damage[player_index][i][dhpleft]       = 0;
-			player_damage[player_index][i][dteamkill]     = 0;
-			player_damage[player_index][i][dweapon]       = 0;
+			player_damage[player_index][i].dhits         = 0;
+			player_damage[player_index][i].dkills        = 0;
+			player_damage[player_index][i].dheadshots    = 0;
+			player_damage[player_index][i].ddamage       = 0;
+			player_damage[player_index][i].dkiller       = 0;
+			player_damage[player_index][i].dhpleft       = 0;
+			player_damage[player_index][i].dteamkill     = 0;
+			player_damage[player_index][i].dweapon       = 0;
 		}
 	}
 
@@ -1614,10 +1613,10 @@ public build_damage_panel(player_index)
 				new wounded_damage = 0;
 				new wounded_hits   = 0;
 				new is_kill        = 0;
-				if (player_damage[i][j][DAMAGE_HITS] > 0) {
-					wounded_hits = player_damage[i][j][DAMAGE_HITS];
-					wounded_damage = player_damage[i][j][DAMAGE_DAMAGE];
-					if (player_damage[i][j][DAMAGE_KILLED] > 0) {
+				if (player_damage[i][j].dhits > 0) {
+					wounded_hits = player_damage[i][j].dhits;
+					wounded_damage = player_damage[i][j].ddamage;
+					if (player_damage[i][j].dkills > 0) {
 						is_kill++;
 					}
 				}
@@ -1657,17 +1656,17 @@ public build_damage_panel(player_index)
 					new is_killer         = 0;
 					new killer_hpleft     = 0;
 					new killer_weapon     = 0;
-					if (player_damage[i][j][DAMAGE_HITS] > 0) {
-						attacked_hits = player_damage[i][j][DAMAGE_HITS];
-						attacked_damage = player_damage[i][j][DAMAGE_DAMAGE];
-						if (player_damage[i][j][DAMAGE_KILLER] > 0) {
+					if (player_damage[i][j].dhits > 0) {
+						attacked_hits = player_damage[i][j].dhits;
+						attacked_damage = player_damage[i][j].ddamage;
+						if (player_damage[i][j].dkiller > 0) {
 							is_killer++;
-							killer_hpleft = player_damage[i][j][DAMAGE_HPLEFT];
-							killer_weapon = player_damage[i][j][DAMAGE_WEAPON];
+							killer_hpleft = player_damage[i][j].dhpleft;
+							killer_weapon = player_damage[i][j].dweapon;
 							
-							player_damage[i][j][DAMAGE_KILLER] = 0;
-							player_damage[i][j][DAMAGE_HPLEFT] = 0;
-							player_damage[i][j][DAMAGE_WEAPON] = -1;
+							player_damage[i][j].dkiller = 0;
+							player_damage[i][j].dhpleft = 0;
+							player_damage[i][j].dweapon = -1;
 						}
 					}
 					if (attacked_hits > 0) {
@@ -1806,15 +1805,15 @@ public build_damage_chat(player_index)
 					new attacked_damage = 0;
 					new killer_hpleft   = 0;
 					new is_killer       = 0;
-					if (player_damage[i][j][DAMAGE_HITS] > 0) {
-						attacked_damage = player_damage[i][j][DAMAGE_DAMAGE];
-						if (player_damage[i][j][DAMAGE_KILLER] > 0) {
-							killer_hpleft = player_damage[i][j][DAMAGE_HPLEFT];
+					if (player_damage[i][j].dhits > 0) {
+						attacked_damage = player_damage[i][j].ddamage;
+						if (player_damage[i][j].dkills > 0) {
+							killer_hpleft = player_damage[i][j].dhpleft;
 							is_killer++;
 
-							player_damage[i][j][DAMAGE_KILLER] = 0;
-							player_damage[i][j][DAMAGE_HPLEFT] = 0;
-							player_damage[i][j][DAMAGE_WEAPON] = -1;
+							player_damage[i][j].dkills  = 0;
+							player_damage[i][j].dhpleft = 0;
+							player_damage[i][j].dweapon = -1;
 						}
 					}
 
@@ -2073,8 +2072,8 @@ public Event_CSGOPlayerHurt(Handle: event, const String: name[], bool:dontBroadc
 			}
 
 			if (gameme_plugin.damage_display == 1) {
-				player_damage[attacker][victim][dhits]++;
-				player_damage[attacker][victim][ddamage] += GetEventInt(event, "dmg_health");
+				player_damage[attacker][victim].dhits++;
+				player_damage[attacker][victim].ddamage += GetEventInt(event, "dmg_health");
 			}
 		}
 	}
@@ -2128,8 +2127,8 @@ public Event_CSSPlayerHurt(Handle: event, const String: name[], bool:dontBroadca
 			}
 
 			if (gameme_plugin.damage_display == 1) {
-				player_damage[attacker][victim][dhits]++;
-				player_damage[attacker][victim][ddamage] += GetEventInt(event, "dmg_health");
+				player_damage[attacker][victim].dhits++;
+				player_damage[attacker][victim].ddamage += GetEventInt(event, "dmg_health");
 			}
 		}
 	}
@@ -2181,8 +2180,8 @@ public Event_DODSPlayerHurt(Handle: event, const String: name[], bool:dontBroadc
 			}
 
 			if (gameme_plugin.damage_display == 1) {
-				player_damage[attacker][victim][dhits]++;
-				player_damage[attacker][victim][ddamage] += GetEventInt(event, "damage");
+				player_damage[attacker][victim].dhits++;
+				player_damage[attacker][victim].ddamage += GetEventInt(event, "damage");
 			}
 		}
 	}
@@ -2333,7 +2332,7 @@ public Event_CSGOPlayerDeath(Handle: event, const String: name[], bool:dontBroad
 				if (GetClientTeam(attacker) == GetClientTeam(victim)) {
 					player_weapons[attacker][weapon_index].wteamkills++;
 					if (gameme_plugin.damage_display == 1) {
-						player_damage[attacker][victim][dteamkill] += 1;
+						player_damage[attacker][victim].dteamkill += 1;
 					}		
 				} else {
 					new assister = GetClientOfUserId(GetEventInt(event, "assister"));
@@ -2343,12 +2342,12 @@ public Event_CSGOPlayerDeath(Handle: event, const String: name[], bool:dontBroad
 				}
 
 				if (gameme_plugin.damage_display == 1) {
-					player_damage[attacker][victim][dhpleft]    = GetClientHealth(attacker);
-					player_damage[attacker][victim][dkills]     += 1;
-					player_damage[attacker][victim][dkiller]    = attacker;
-					player_damage[attacker][victim][dweapon]    = weapon_index;
+					player_damage[attacker][victim].dhpleft  = GetClientHealth(attacker);
+					player_damage[attacker][victim].dkills   += 1;
+					player_damage[attacker][victim].dkiller  = attacker;
+					player_damage[attacker][victim].dweapon  = weapon_index;
 					if (headshot == 1) {
-						player_damage[attacker][victim][dheadshots] += 1;
+						player_damage[attacker][victim].dheadshots += 1;
 					}
 
 					if (gameme_plugin.damage_display_type == 2) {
@@ -2422,17 +2421,17 @@ public Event_CSSPlayerDeath(Handle: event, const String: name[], bool:dontBroadc
 				if (GetClientTeam(attacker) == GetClientTeam(victim)) {
 					player_weapons[attacker][weapon_index].wteamkills++;
 					if (gameme_plugin.damage_display == 1) {
-						player_damage[attacker][victim][dteamkill] += 1;
+						player_damage[attacker][victim].dteamkill += 1;
 					}		
 				}
 
 				if (gameme_plugin.damage_display == 1) {
-					player_damage[attacker][victim][dhpleft]    = GetClientHealth(attacker);
-					player_damage[attacker][victim][dkills]     += 1;
-					player_damage[attacker][victim][dkiller]    = attacker;
-					player_damage[attacker][victim][dweapon]    = weapon_index;
+					player_damage[attacker][victim].dhpleft  = GetClientHealth(attacker);
+					player_damage[attacker][victim].dkills  += 1;
+					player_damage[attacker][victim].dkiller  = attacker;
+					player_damage[attacker][victim].dweapon  = weapon_index;
 					if (headshot == 1) {
-						player_damage[attacker][victim][dheadshots] += 1;
+						player_damage[attacker][victim].dheadshots += 1;
 					}
 
 					if (gameme_plugin.damage_display_type == 2) {
@@ -2483,15 +2482,15 @@ public Event_DODSPlayerDeath(Handle: event, const String: name[], bool:dontBroad
 				if (GetClientTeam(attacker) == GetClientTeam(victim)) {
 					player_weapons[attacker][weapon_index].wteamkills++;
 					if (gameme_plugin.damage_display == 1) {
-						player_damage[attacker][victim][dteamkill] += 1;
+						player_damage[attacker][victim].dteamkill += 1;
 					}		
 				}
 
 				if (gameme_plugin.damage_display == 1) {
-					player_damage[attacker][victim][dhpleft]    = GetClientHealth(attacker);
-					player_damage[attacker][victim][dkills]     += 1;
-					player_damage[attacker][victim][dkiller]    = attacker;
-					player_damage[attacker][victim][dweapon]    = weapon_index;
+					player_damage[attacker][victim].dhpleft  = GetClientHealth(attacker);
+					player_damage[attacker][victim].dkills  += 1;
+					player_damage[attacker][victim].dkiller  = attacker;
+					player_damage[attacker][victim].dweapon  = weapon_index;
 
 					if (gameme_plugin.damage_display_type == 2) {
 						build_damage_chat(victim);
@@ -2567,7 +2566,7 @@ public Event_HL2MPPlayerDeath(Handle: event, const String: name[], bool:dontBroa
 			if (weapon_index > -1) {
 				player_weapons[attacker][weapon_index].wkills++;		
 				player_weapons[victim][weapon_index].wdeaths++;
-				if ((hl2mp_data[teamplay_enabled]) && (GetClientTeam(attacker) == GetClientTeam(victim))) {
+				if ((hl2mp_data.teamplay_enabled) && (GetClientTeam(attacker) == GetClientTeam(victim))) {
 					player_weapons[attacker][weapon_index].wteamkills++;
 				}	
 			}
@@ -3035,11 +3034,11 @@ public OnGameFrame()
 	switch (gameme_plugin.mod_id) {
 		case MOD_HL2MP: {
 			new bow_entity;
-			while (PopStackCell(hl2mp_data[boltchecks], bow_entity))	{
+			while (PopStackCell(hl2mp_data.boltchecks, bow_entity))	{
 				if (!IsValidEntity(bow_entity)) {
 					continue;
 				}
-				new owner = GetEntDataEnt2(bow_entity, hl2mp_data[crossbow_owner_offset]);
+				new owner = GetEntDataEnt2(bow_entity, hl2mp_data.crossbow_owner_offset);
 				if ((owner < 0) || (owner > MaxClients)) {
 					continue;
 				}
@@ -3104,7 +3103,7 @@ public OnEntityCreated(entity, const String: classname[]) {
 	switch (gameme_plugin.mod_id) {
 		case MOD_HL2MP: {
 			if (strcmp(classname, "crossbow_bolt") == 0) {
-				PushStackCell(hl2mp_data[boltchecks], entity);
+				PushStackCell(hl2mp_data.boltchecks, entity);
 			}
 		}
 		case MOD_TF2: {
@@ -3387,7 +3386,7 @@ public Action: MessagePrefixClear(args)
 public OnTeamPlayChange(Handle:cvar, const String:oldVal[], const String:newVal[])
 {
 	if (gameme_plugin.mod_id == MOD_HL2MP) {
-		hl2mp_data[teamplay_enabled] = GetConVarBool(hl2mp_data[teamplay]);
+		hl2mp_data.teamplay_enabled = GetConVarBool(hl2mp_data.teamplay);
 	}
 }
 
@@ -4820,7 +4819,7 @@ public Action: gameME_Event_PlyDeath(Handle: event, const String: name[], bool:d
 				decl String: weapon[32];
 				GetEventString(event, "weapon", weapon, 32);
 				if (strncmp(weapon, "melee", 5) == 0) {
-					new new_weapon_index = GetEntDataEnt2(attacker, l4dii_data[active_weapon_offset]);
+					new new_weapon_index = GetEntDataEnt2(attacker, l4dii_data.active_weapon_offset);
 					if (IsValidEdict(new_weapon_index)) {
 						GetEdictClassname(new_weapon_index, weapon, 32);
 						if (strncmp(weapon[7], "melee", 5) == 0) { 
@@ -4836,18 +4835,18 @@ public Action: gameME_Event_PlyDeath(Handle: event, const String: name[], bool:d
 			decl String: weapon[32];
 			GetEventString(event, "weapon", weapon, 32);
 			if (strcmp(weapon, "crossbow_bolt") == 0) {
-				if (hl2mp_players[victim][nextbow_hitgroup] == HITGROUP_HEAD) {
+				if (hl2mp_players[victim].nextbow_hitgroup == HITGROUP_HEAD) {
 					log_player_event(attacker, "triggered", "headshot");
 				}
 			} else {
-				if (hl2mp_players[victim][next_hitgroup] == HITGROUP_HEAD) {
+				if (hl2mp_players[victim].next_hitgroup == HITGROUP_HEAD) {
 					log_player_event(attacker, "triggered", "headshot");
 				}		
 			}
 		}
 
 		if (gameme_plugin.mod_id == MOD_ZPS) {
-			if (zps_players[victim][next_hitgroup_zps] == HITGROUP_HEAD) {
+			if (zps_players[victim].next_hitgroup_zps == HITGROUP_HEAD) {
 				log_player_event(attacker, "triggered", "headshot");
 			}		
 		}
@@ -6070,11 +6069,11 @@ public OnHL2MPTraceAttack(victim, attacker, inflictor, Float: damage, damagetype
 		if (IsValidEntity(inflictor)) {
 			decl String: inflictorclsname[64];
 			if ((GetEntityNetClass(inflictor, inflictorclsname, sizeof(inflictorclsname)) && (strcmp(inflictorclsname, "CCrossbowBolt") == 0))) {
-				hl2mp_players[victim][nextbow_hitgroup] = hitgroup;
+				hl2mp_players[victim].nextbow_hitgroup = hitgroup;
 				return;
 			}
 		}
-		hl2mp_players[victim][next_hitgroup] = hitgroup;
+		hl2mp_players[victim].next_hitgroup = hitgroup;
 	}
 }
 
@@ -6096,7 +6095,7 @@ public OnHL2MPTakeDamage(victim, attacker, inflictor, Float:damage, damagetype)
 			weapon_index = get_weapon_index(hl2mp_weapon_list, MAX_HL2MP_WEAPON_COUNT, weapon_str[7]);
 		}
 
-		new hitgroup = ((weapon_index == HL2MP_CROSSBOW) ? hl2mp_players[victim][nextbow_hitgroup] : hl2mp_players[victim][next_hitgroup]);
+		new hitgroup = ((weapon_index == HL2MP_CROSSBOW) ? hl2mp_players[victim].nextbow_hitgroup : hl2mp_players[victim].next_hitgroup);
 		if ((hitgroup >= 0) && (hitgroup < 8)) {
 			switch (hitgroup) {
 				case HITGROUP_GENERIC:
@@ -6128,9 +6127,9 @@ public OnHL2MPTakeDamage(victim, attacker, inflictor, Float:damage, damagetype)
 		}
 		
 		if (weapon_index == HL2MP_CROSSBOW) {
-			hl2mp_players[victim][nextbow_hitgroup] = 0;
+			hl2mp_players[victim].nextbow_hitgroup = 0;
 		} else {
-			hl2mp_players[victim][next_hitgroup] = 0;
+			hl2mp_players[victim].next_hitgroup = 0;
 		}
 		
 	}
@@ -6153,7 +6152,7 @@ public OnZPSFireBullets(attacker, shots, String: weapon[])
 public OnZPSTraceAttack(victim, attacker, inflictor, Float:damage, damagetype, ammotype, hitbox, hitgroup)
 {
 	if ((hitgroup > 0) && (attacker > 0) && (attacker <= MaxClients) && (victim > 0) && (victim <= MaxClients)) {
-		zps_players[victim][next_hitgroup_zps] = hitgroup;
+		zps_players[victim].next_hitgroup_zps = hitgroup;
 	}
 }
 
@@ -6161,7 +6160,7 @@ public OnZPSTraceAttack(victim, attacker, inflictor, Float:damage, damagetype, a
 public OnZPSTakeDamage(victim, attacker, inflictor, Float:damage, damagetype)
 {	
 	if ((attacker > 0) && (attacker <= MaxClients) && (victim > 0) && (victim <= MaxClients)) {
-		new hitgroup = zps_players[victim][next_hitgroup_zps];
+		new hitgroup = zps_players[victim].next_hitgroup_zps;
 		new bool: headshot = ((GetClientHealth(victim) <= 0) && (hitgroup == HITGROUP_HEAD));
 		
 		decl String: weapon_str[32];
@@ -6175,7 +6174,7 @@ public OnZPSTakeDamage(victim, attacker, inflictor, Float:damage, damagetype)
 				player_weapons[attacker][weapon_index].wheadshots++;
 			}
 		}
-		zps_players[victim][next_hitgroup_zps] = 0;
+		zps_players[victim].next_hitgroup_zps = 0;
 	}
 }
 
@@ -6393,9 +6392,9 @@ public Event_INSMODPlayerPickSquad(Handle:event, const String:name[], bool:dontB
 	ReplaceString(class_template, sizeof(class_template), "_insurgent", "", false);
 	ReplaceString(class_template, sizeof(class_template), "_survival", "", false);
 	
-	if(!StrEqual(insmod_players[client][last_role], class_template)) {
+	if(!StrEqual(insmod_players[client].last_role, class_template)) {
 		LogToGame("\"%L\" changed role to \"%s\"", client, class_template);
-		strcopy(insmod_players[client][last_role], 64, class_template);
+		strcopy(insmod_players[client].last_role, 64, class_template);
 	}
 }
 
