@@ -102,13 +102,13 @@ gameme_plugin_data gameme_plugin;
  *  Spectator Info Display
  */
 
-#define SPECTATOR_TIMER_INTERVAL	0.5
-#define SPECTATOR_NONE				0
-#define SPECTATOR_FIRSTPERSON		4
-#define SPECTATOR_3RDPERSON			5
-#define SPECTATOR_FREELOOK			6
-#define QUERY_TYPE_UNKNOWN			0
-#define QUERY_TYPE_SPECTATOR		1001
+#define SPECTATOR_TIMER_INTERVAL    0.5
+#define SPECTATOR_NONE              0
+#define SPECTATOR_FIRSTPERSON       4
+#define SPECTATOR_3RDPERSON         5
+#define SPECTATOR_FREELOOK          6
+#define QUERY_TYPE_UNKNOWN          0
+#define QUERY_TYPE_SPECTATOR        1001
 
 enum struct player_display_messages {
 	char smessage[255];
@@ -440,20 +440,20 @@ new const String: tf2_weapon_list[MAX_TF2_WEAPON_COUNT][] = {
 };
 
 
-enum tf2_plugin_data {
-	Handle: weapons_trie, 
-	Handle: items_kv,
-	Handle: slots_trie,
-	stun_ball_id,
-	Handle: stun_balls,
-	Handle: wearables,
-	carry_offset,
-	Handle: critical_hits,
-	critical_hits_enabled,
-	bool: block_next_logging
+enum struct tf2_plugin_data {
+	Handle weapons_trie; 
+	Handle items_kv;
+	Handle slots_trie;
+	int stun_ball_id;
+	Handle stun_balls;
+	Handle wearables;
+	int carry_offset;
+	Handle critical_hits;
+	bool critical_hits_enabled;
+	bool block_next_logging;
 }
 
-new tf2_data[tf2_plugin_data];
+tf2_plugin_data tf2_data;
 
 
 enum tf2_player {
@@ -739,24 +739,24 @@ public OnPluginStart()
 			hl2mp_data.boltchecks = CreateStack();
 		}
 		case MOD_TF2: {
-			tf2_data[critical_hits] = FindConVar("tf_weapon_criticals");
-			HookConVarChange(tf2_data[critical_hits], OnTF2CriticalHitsChange);
+			tf2_data.critical_hits = FindConVar("tf_weapon_criticals");
+			HookConVarChange(tf2_data.critical_hits, OnTF2CriticalHitsChange);
 		
-			tf2_data[stun_balls] = CreateStack();
-			tf2_data[wearables] = CreateStack();
-			tf2_data[items_kv] = CreateKeyValues("items_game");
-			if (FileToKeyValues(tf2_data[items_kv], "scripts/items/items_game.txt")) {
-				KvJumpToKey(tf2_data[items_kv], "items");
+			tf2_data.stun_balls = CreateStack();
+			tf2_data.wearables = CreateStack();
+			tf2_data.items_kv = CreateKeyValues("items_game");
+			if (FileToKeyValues(tf2_data.items_kv, "scripts/items/items_game.txt")) {
+				KvJumpToKey(tf2_data.items_kv, "items");
 			}
-			tf2_data[slots_trie] = CreateTrie();
-			SetTrieValue(tf2_data[slots_trie], "primary", 0);
-			SetTrieValue(tf2_data[slots_trie], "secondary", 1);
-			SetTrieValue(tf2_data[slots_trie], "melee", 2);
-			SetTrieValue(tf2_data[slots_trie], "pda", 3);
-			SetTrieValue(tf2_data[slots_trie], "pda2", 4);
-			SetTrieValue(tf2_data[slots_trie], "building", 5);
-			SetTrieValue(tf2_data[slots_trie], "head", 6);
-			SetTrieValue(tf2_data[slots_trie], "misc", 7);
+			tf2_data.slots_trie = CreateTrie();
+			SetTrieValue(tf2_data.slots_trie, "primary", 0);
+			SetTrieValue(tf2_data.slots_trie, "secondary", 1);
+			SetTrieValue(tf2_data.slots_trie, "melee", 2);
+			SetTrieValue(tf2_data.slots_trie, "pda", 3);
+			SetTrieValue(tf2_data.slots_trie, "pda2", 4);
+			SetTrieValue(tf2_data.slots_trie, "building", 5);
+			SetTrieValue(tf2_data.slots_trie, "head", 6);
+			SetTrieValue(tf2_data.slots_trie, "misc", 7);
 
 			for (new i = 0; (i <= MAXPLAYERS); i++) {
 				tf2_players[i][object_list]  = CreateStack(); 
@@ -1158,7 +1158,7 @@ get_server_mod()
 				
 				AddNormalSoundHook(NormalSHook: Event_TF2SoundHook);
 				
-				tf2_data[carry_offset] = FindSendPropInfo("CTFPlayer", "m_bCarryingObject");
+				tf2_data.carry_offset = FindSendPropInfo("CTFPlayer", "m_bCarryingObject");
 			}
 			case MOD_L4D, MOD_L4DII: {
 				HookEvent("weapon_fire",  			 Event_L4DPlayerFire);
@@ -1332,15 +1332,15 @@ get_weapon_index(const String: weapon_list[][], weapon_list_count, const String:
 init_tf2_weapon_trie()
 {
 
-	tf2_data[weapons_trie] = CreateTrie();
+	tf2_data.weapons_trie = CreateTrie();
 	for (new i = 0; i < MAX_TF2_WEAPON_COUNT; i++) {
-		SetTrieValue(tf2_data[weapons_trie], tf2_weapon_list[i], i);
+		SetTrieValue(tf2_data.weapons_trie, tf2_weapon_list[i], i);
 	}
 	
 	new index;
-	if(GetTrieValue(tf2_data[weapons_trie], "ball", index)) {
-		SetTrieValue(tf2_data[weapons_trie], "tf_projectile_stun_ball", index);
-		tf2_data[stun_ball_id] = index;
+	if(GetTrieValue(tf2_data.weapons_trie, "ball", index)) {
+		SetTrieValue(tf2_data.weapons_trie, "tf_projectile_stun_ball", index);
+		tf2_data.stun_ball_id = index;
 	}
 }
 
@@ -1355,7 +1355,7 @@ get_tf2_weapon_index(const String: weapon_name[], client = 0, weapon = -1)
 		return -1;
 	}
 	
-	if(GetTrieValue(tf2_data[weapons_trie], weapon_name, weapon_index)) {
+	if(GetTrieValue(tf2_data.weapons_trie, weapon_name, weapon_index)) {
 		if (weapon_index & TF2_UNLOCKABLE_BIT) {
 			weapon_index &= ~TF2_UNLOCKABLE_BIT;
 			unlockable_weapon = true;
@@ -3047,18 +3047,18 @@ public OnGameFrame()
 		}
 		case MOD_TF2: {
 			new entity;
-			if ((gameme_plugin.sdkhook_available) && (tf2_data[stun_ball_id] > -1)) {
-				while (PopStackCell(tf2_data[stun_balls], entity)) {
+			if ((gameme_plugin.sdkhook_available) && (tf2_data.stun_ball_id > -1)) {
+				while (PopStackCell(tf2_data.stun_balls, entity)) {
 					if (IsValidEntity(entity)) {
 						new owner = GetEntPropEnt(entity, Prop_Send, "m_hThrower");
 						if ((owner > 0) && (owner <= MaxClients)) {
-							player_weapons[owner][tf2_data[stun_ball_id]].wshots++;
+							player_weapons[owner][tf2_data.stun_ball_id].wshots++;
 						}
 					}
 				}
 			}
 
-			while (PopStackCell(tf2_data[wearables], entity)) {
+			while (PopStackCell(tf2_data.wearables, entity)) {
 				if (IsValidEntity(entity)) {
 					new owner = GetEntPropEnt(entity, Prop_Send, "m_hOwnerEntity");
 					if ((owner > 0) && (owner <= MaxClients)) {
@@ -3067,10 +3067,10 @@ public OnGameFrame()
 						decl String: tmp_str[16];
 						Format(tmp_str, 16, "%d", item_index);
 
-						if (KvJumpToKey(tf2_data[items_kv], tmp_str)) {
-							KvGetString(tf2_data[items_kv], "item_slot", tmp_str, 16);
+						if (KvJumpToKey(tf2_data.items_kv, tmp_str)) {
+							KvGetString(tf2_data.items_kv, "item_slot", tmp_str, 16);
 							new slot;
-							if (GetTrieValue(tf2_data[slots_trie], tmp_str, slot)) {
+							if (GetTrieValue(tf2_data.slots_trie, tmp_str, slot)) {
 								if ((slot == 0) && (tf2_players[owner][player_class] == TFClass_DemoMan)) {
 									slot++;
 								}
@@ -3080,7 +3080,7 @@ public OnGameFrame()
 								}
 								tf2_players[owner][player_loadout1][slot] = entity;
 							}
-							KvGoBack(tf2_data[items_kv]);
+							KvGoBack(tf2_data.items_kv);
 						}
 					}
 				}
@@ -3088,7 +3088,7 @@ public OnGameFrame()
 	
 			new client_count = GetClientCount();
 			for (new i = 1; i <= client_count; i++) {
-				if ((IsClientInGame(i)) && (GetEntData(i, tf2_data[carry_offset], 1))) {
+				if ((IsClientInGame(i)) && (GetEntData(i, tf2_data.carry_offset, 1))) {
 					tf2_players[i][carry_object] = true;
 				}
 			}
@@ -3108,9 +3108,9 @@ public OnEntityCreated(entity, const String: classname[]) {
 		}
 		case MOD_TF2: {
 			if(StrEqual(classname, "tf_projectile_stun_ball")) {
-				PushStackCell(tf2_data[stun_balls], EntIndexToEntRef(entity));
+				PushStackCell(tf2_data.stun_balls, EntIndexToEntRef(entity));
 			} else if(StrEqual(classname, "tf_wearable_item_demoshield") || StrEqual(classname, "tf_wearable_item")) {
-				PushStackCell(tf2_data[wearables], EntIndexToEntRef(entity));
+				PushStackCell(tf2_data.wearables, EntIndexToEntRef(entity));
 			}
 		}
 	}
@@ -3136,8 +3136,8 @@ public Action: OnClientCommandKeyValues(int client, KeyValues: kv)
 
 public Action:OnTF2GameLog(const String: message[])
 {
-	if (tf2_data[block_next_logging]) {
-		tf2_data[block_next_logging] = false;
+	if (tf2_data.block_next_logging) {
+		tf2_data.block_next_logging = false;
 		return Plugin_Handled;
 	}
 	return Plugin_Continue;
@@ -3393,8 +3393,8 @@ public OnTeamPlayChange(Handle:cvar, const String:oldVal[], const String:newVal[
 
 public OnTF2CriticalHitsChange(Handle:cvar, const String:oldVal[], const String:newVal[])
 {
-	tf2_data[critical_hits_enabled] = GetConVarBool(tf2_data[critical_hits]);
-	if(!tf2_data[critical_hits_enabled]) {
+	tf2_data.critical_hits_enabled = GetConVarBool(tf2_data.critical_hits);
+	if(!tf2_data.critical_hits_enabled) {
 		for(new i = 1; i <= MaxClients; i++) {
 			dump_player_data(i);
 		}
@@ -5701,7 +5701,7 @@ public Action: Event_TF2ObjectDestroyedPre(Handle: event, const String: name[], 
 			GetClientAbsOrigin(attacker, player_origin);
 			LogToGame("\"%L\" %s \"%s\" (object \"%s\") (weapon \"%s\") (objectowner \"%L\") (attacker_position \"%d %d %d\")", attacker, "triggered", "killedobject", "OBJ_SENTRYGUN_MINI", weapon_str, victim, RoundFloat(player_origin[0]), RoundFloat(player_origin[1]), RoundFloat(player_origin[2])); 
 		}
-		tf2_data[block_next_logging] = true;
+		tf2_data.block_next_logging = true;
 	}
 	return Plugin_Continue;
 }
@@ -5713,7 +5713,7 @@ public Action: Event_TF2PlayerBuiltObjectPre(Handle: event, const String: name[]
 	if (client > 0) {
 		if (tf2_players[client][carry_object]) {
 			tf2_players[client][carry_object] = false;
-			tf2_data[block_next_logging] = true;
+			tf2_data.block_next_logging = true;
 		} else {
 			if (GetEntProp(GetEventInt(event, "index"), Prop_Send, "m_bMiniBuilding", 1)) {
 				if ((client > 0) && (client <= MAXPLAYERS) && (IsClientInGame(client))) {
@@ -5721,7 +5721,7 @@ public Action: Event_TF2PlayerBuiltObjectPre(Handle: event, const String: name[]
 					GetClientAbsOrigin(client, player_origin);
 					LogToGame("\"%L\" %s \"%s\" (object \"%s\") (position \"%d %d %d\")", client, "triggered", "builtobject", "OBJ_SENTRYGUN_MINI", RoundFloat(player_origin[0]), RoundFloat(player_origin[1]), RoundFloat(player_origin[2])); 
 				}
-				tf2_data[block_next_logging] = true;
+				tf2_data.block_next_logging = true;
 			}
 		}
 	}
