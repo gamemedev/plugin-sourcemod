@@ -377,8 +377,8 @@ zps_player zps_players[MAXPLAYERS + 1];
  *  Insurgency 2014
  */
 
-#define MAX_INSMOD_WEAPON_COUNT 30
-new const String: insmod_weapon_list[][] = {"ak74", "akm", "aks74u", "fal", "m14", "m16a4", "m1911", "m1a1", "m249", "m40a1", "m45", "m4a1", "m590", "m9", "makarov", "mini14", "mk18", "mosin", "mp40", "mp5", "rpk", "sks", "toz", "ump45", "galil", "galil_sar", "sterling", "model10", "l1a1", "gurkha"}; 
+#define MAX_INSMOD_WEAPON_COUNT 88
+new const String: insmod_weapon_list[][] = {"mp443", "m1asocom16", "ppsh41", "m1014", "m1garand", "steyraug", "car15", "kar98", "sig553", "sten", "thompson", "stg44", "sr25", "spectre", "spas12", "scarl", "scar", "saiga12auto", "remingtonmsr", "pecheneg", "p90", "ots33", "nova", "mp7", "mp5a4", "mk46", "mk18_m0", "mg42", "mac10", "m60", "m500", "m4a1sopmod", "m240", "m16a1", "m107", "ksg", "krissvector", "honeybadger", "hk417", "gol", "glock33", "glock18", "g36c", "g33", "famas", "f2000", "enfield", "dragunovsvu", "deagle", "combatcommander", "colt9mm", "cobra", "cm901", "asval", "ak12u", "acr", "type95", "l85a2", "ak74", "akm", "aks74u", "fal", "m14", "m16a4", "m1911", "m1a1", "m249", "m40a1", "m45", "m4a1", "m590", "m9", "makarov", "mini14", "mk18", "mosin", "mp40", "mp5", "rpk", "sks", "toz", "ump45", "galil", "galil_sar", "sterling", "model10", "l1a1", "gurkha"}; 
 
 enum struct insmod_player {
 	char last_role[64];
