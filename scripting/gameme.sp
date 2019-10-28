@@ -246,34 +246,34 @@ new const String: csgo_weapon_list[][] = { "ak47", "m4a1", "deagle", "awp", "p90
  */
 
 new const String: css_code_models[8][] = {"phoenix", 
-                           		   		  "leet", 
-                              			  "arctic", 
-                              			  "guerilla",
-                              			  "urban", 
-          	            	        	  "gsg9", 
-            	            	    	  "sas", 
-                		            	  "gign"};
+                                          "leet", 
+                                          "arctic", 
+                                          "guerilla",
+                                          "urban", 
+                                          "gsg9", 
+                                          "sas", 
+                                          "gign"};
 
 #define MAX_CSS_CT_MODELS 4
 new const String: css_ct_models[4][] = {"models/player/ct_urban.mdl", 
-          	            	        	"models/player/ct_gsg9.mdl", 
-            	            	    	"models/player/ct_sas.mdl", 
-                		            	"models/player/ct_gign.mdl"};
+                                        "models/player/ct_gsg9.mdl", 
+                                        "models/player/ct_sas.mdl", 
+                                        "models/player/ct_gign.mdl"};
 
 #define MAX_CSS_TS_MODELS 4
 new const String: css_ts_models[4][] = {"models/player/t_phoenix.mdl", 
-                              			"models/player/t_leet.mdl", 
-                              			"models/player/t_arctic.mdl", 
-                              			"models/player/t_guerilla.mdl"};
+                                        "models/player/t_leet.mdl", 
+                                        "models/player/t_arctic.mdl", 
+                                        "models/player/t_guerilla.mdl"};
 
 
 
 #define MAX_CSS_WEAPON_COUNT 28
 new const String: css_weapon_list[][] = { "ak47", "m4a1", "awp", "deagle", "mp5navy", "aug", "p90",
-										  "famas", "galil", "scout", "g3sg1", "hegrenade", "usp",
-										  "glock", "m249", "m3", "elite", "fiveseven", "mac10",
-										  "p228", "sg550", "sg552", "tmp", "ump45", "xm1014", "knife",
-										  "smokegrenade", "flashbang" };
+                                          "famas", "galil", "scout", "g3sg1", "hegrenade", "usp",
+                                          "glock", "m249", "m3", "elite", "fiveseven", "mac10",
+                                          "p228", "sg550", "sg552", "tmp", "ump45", "xm1014", "knife",
+                                          "smokegrenade", "flashbang" };
 
 
 
@@ -283,31 +283,31 @@ new const String: css_weapon_list[][] = { "ak47", "m4a1", "awp", "deagle", "mp5n
 
 #define MAX_DODS_WEAPON_COUNT 26
 new const String: dods_weapon_list[][] = {
-									 "thompson",		// 11
-									 "m1carbine",		// 7
-									 "k98",				// 8
-									 "k98_scoped",		// 10	// 34
-									 "mp40",			// 12
-									 "mg42",			// 16	// 36
-									 "mp44",			// 13	// 38
-									 "colt",			// 3
-									 "garand",			// 31	// 6
-									 "spring",			// 9	// 33
-									 "c96",				// 5
-									 "bar",				// 14
-									 "30cal",			// 15	// 35
-									 "bazooka",			// 17
-									 "pschreck",		// 18
-									 "p38",				// 4
-									 "spade",			// 2
-									 "frag_ger",		// 20
-									 "punch",			// 30	// 29
-									 "frag_us",			// 19
-									 "amerknife",		// 1
-									 "riflegren_ger",	// 26
-									 "riflegren_us",	// 25
-									 "smoke_ger",		// 24
-									 "smoke_us",		// 23
+									 "thompson",        // 11
+									 "m1carbine",       // 7
+									 "k98",             // 8
+									 "k98_scoped",      // 10	// 34
+									 "mp40",            // 12
+									 "mg42",            // 16	// 36
+									 "mp44",            // 13	// 38
+									 "colt",            // 3
+									 "garand",          // 31	// 6
+									 "spring",          // 9	// 33
+									 "c96",             // 5
+									 "bar",             // 14
+									 "30cal",           // 15	// 35
+									 "bazooka",         // 17
+									 "pschreck",        // 18
+									 "p38",             // 4
+									 "spade",           // 2
+									 "frag_ger",        // 20
+									 "punch",           // 30	// 29
+									 "frag_us",         // 19
+									 "amerknife",       // 1
+									 "riflegren_ger",   // 26
+									 "riflegren_us",    // 25
+									 "smoke_ger",       // 24
+									 "smoke_us",        // 23
 									 "dod_bomb_target"
 								};
 
@@ -475,12 +475,12 @@ new tf2_players[MAXPLAYERS + 1][tf2_player];
  *  Raw Messages Interface
  */
 
-#define RAW_MESSAGE_RANK				1
-#define RAW_MESSAGE_PLACE				2
-#define RAW_MESSAGE_KDEATH				3
-#define RAW_MESSAGE_SESSION_DATA		4
-#define RAW_MESSAGE_TOP10				5
-#define RAW_MESSAGE_NEXT				6
+#define RAW_MESSAGE_RANK          1
+#define RAW_MESSAGE_PLACE         2
+#define RAW_MESSAGE_KDEATH        3
+#define RAW_MESSAGE_SESSION_DATA  4
+#define RAW_MESSAGE_TOP10         5
+#define RAW_MESSAGE_NEXT          6
 
 // callbacks
 #define RAW_MESSAGE_CALLBACK_PLAYER		101
