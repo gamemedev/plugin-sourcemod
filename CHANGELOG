@@ -22,7 +22,7 @@ Current work [V5.0.0]
 --------------------------------------------------------------------------------------------------------------------------------------------- 
 + Added more weapon logging for Insurgency
 - Updated scripting syntax to match latest stable SM branch v1.10
-- Removed some unecessary code
+- Removed some unnecessary code
 - Minor changes and fixes
 - Compiled against 1.10.0.6453
 
