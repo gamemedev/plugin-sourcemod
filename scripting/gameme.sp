@@ -117,10 +117,10 @@ enum struct player_display_messages {
 player_display_messages player_messages[MAXPLAYERS + 1][MAXPLAYERS + 1];
 
 
-enum spectator_data {
-	Handle: stimer,
-	Float: srequested,
-	starget
+enum struct spectator_data {
+	Handle stimer;
+	float srequested;
+	int starget;
 }
 
 
@@ -128,12 +128,22 @@ enum spectator_data {
  *  gameME Stats Players
  */
 
-enum gameme_data {
-	prole, parmor, phealth, ploc1, ploc2, ploc3, pangle, pmoney, palive, pweapon, pgglevel,
-	pspectator[spectator_data]
+enum struct gameme_player_data {
+	int prole;
+	int parmor;
+	int phealth;
+	float ploc1;
+	float ploc2;
+	float ploc3;
+	float pangle;
+	int pmoney;
+	int palive;
+	char pweapon[64];
+	int pgglevel;
+	spectator_data pspectator;
 }
 
-new gameme_players[MAXPLAYERS + 1][gameme_data];
+gameme_player_data gameme_players[MAXPLAYERS + 1];
 
 
 /**
@@ -150,10 +160,26 @@ new gameme_players[MAXPLAYERS + 1][gameme_data];
 #define HITGROUP_RIGHTLEG  7
 
 #define MAX_LOG_WEAPONS    64
-#define LOG_HIT_OFFSET     8
-enum weapon_data {wshots, whits, wkills, wheadshots, wteamkills, wdamage, wdeaths, whealth, wgeneric, whead, wchest, wstomach, wleftarm, wrightarm, wleftleg, wrightleg}
+enum struct weapon_data {
+	int wshots; 
+	int whits; 
+	int wkills; 
+	int wheadshots; 
+	int wteamkills; 
+	int wdamage; 
+	int wdeaths; 
+	int whealth; 
+	int wgeneric; 
+	int whead; 
+	int wchest; 
+	int wstomach; 
+	int wleftarm; 
+	int wrightarm; 
+	int wleftleg; 
+	int wrightleg;
+}
 	
-new player_weapons[MAXPLAYERS + 1][MAX_LOG_WEAPONS][weapon_data];
+weapon_data player_weapons[MAXPLAYERS + 1][MAX_LOG_WEAPONS];
 
 
 /**
@@ -798,9 +824,9 @@ public OnPluginEnd()
 	
 	if ((gameme_plugin.mod_id == MOD_CSGO) || (gameme_plugin.mod_id == MOD_CSS)) {
 		for (new i = 1; (i <= MaxClients); i++) {
-			if (gameme_players[i][pspectator][stimer] != INVALID_HANDLE) {
-				KillTimer(gameme_players[i][pspectator][stimer]);
-				gameme_players[i][pspectator][stimer] = INVALID_HANDLE;
+			if (gameme_players[i].pspectator.stimer != INVALID_HANDLE) {
+				KillTimer(gameme_players[i].pspectator.stimer);
+				gameme_players[i].pspectator.stimer = INVALID_HANDLE;
 			}
 		}
 	}
@@ -891,7 +917,7 @@ public OnAllPluginsLoaded()
 			}
 			
 			if ((gameme_plugin.mod_id == MOD_CSGO) || (gameme_plugin.mod_id == MOD_CSS)) {
-				gameme_players[i][pspectator][stimer] = INVALID_HANDLE;
+				gameme_players[i].pspectator.stimer = INVALID_HANDLE;
 				for (new j = 0; (j <= MAXPLAYERS); j++) {
 					player_messages[j][i].supdated = 1;
 					strcopy(player_messages[j][i].smessage, 255, "");
@@ -917,8 +943,8 @@ public OnMapStart()
 
 	for (new i = 0; (i <= MAXPLAYERS); i++) {
 		reset_player_data(i);
-		gameme_players[i][prole] = -1;
-		gameme_players[i][pgglevel] = 0;
+		gameme_players[i].prole = -1;
+		gameme_players[i].pgglevel = 0;
 	}
 	
 	if ((gameme_plugin.mod_id == MOD_CSGO) || (gameme_plugin.mod_id == MOD_CSS) || (gameme_plugin.mod_id == MOD_TF2) || (gameme_plugin.mod_id == MOD_DODS) || (gameme_plugin.mod_id == MOD_HL2MP) ||
@@ -1253,8 +1279,8 @@ public OnClientPutInServer(client)
 		}
 
 		reset_player_data(client);
-		gameme_players[client][prole] = -1;
-		gameme_players[client][pgglevel] = 0;
+		gameme_players[client].prole = -1;
+		gameme_players[client].pgglevel = 0;
 		
 		if (!IsFakeClient(client)) {
 			QueryClientConVar(client, "cl_language", ConVarQueryFinished:ClientConVar, client);
@@ -1265,7 +1291,7 @@ public OnClientPutInServer(client)
 
 		if ((gameme_plugin.mod_id == MOD_CSGO) || (gameme_plugin.mod_id == MOD_CSS)) {
 			if (gameme_plugin.display_spectator == 1) {
-				gameme_players[client][pspectator][stimer] = INVALID_HANDLE;
+				gameme_players[client].pspectator.stimer = INVALID_HANDLE;
 				for (new j = 0; (j <= MAXPLAYERS); j++) {
 					player_messages[j][client].supdated = 1;
 					strcopy(player_messages[j][client].smessage, 255, "");
@@ -1378,21 +1404,21 @@ get_tf2_weapon_index(const String: weapon_name[], client = 0, weapon = -1)
 reset_player_data(player_index) 
 {
 	for (new i = 0; (i < MAX_LOG_WEAPONS); i++) {
-		player_weapons[player_index][i][wshots]     = 0;
-		player_weapons[player_index][i][whits]      = 0;
-		player_weapons[player_index][i][wkills]     = 0;
-		player_weapons[player_index][i][wheadshots] = 0;
-		player_weapons[player_index][i][wteamkills] = 0;
-		player_weapons[player_index][i][wdamage]    = 0;
-		player_weapons[player_index][i][wdeaths]    = 0;
-		player_weapons[player_index][i][wgeneric]   = 0;
-		player_weapons[player_index][i][whead]      = 0;
-		player_weapons[player_index][i][wchest]     = 0;
-		player_weapons[player_index][i][wstomach]   = 0;
-		player_weapons[player_index][i][wleftarm]   = 0;
-		player_weapons[player_index][i][wrightarm]  = 0;
-		player_weapons[player_index][i][wleftleg]   = 0;
-		player_weapons[player_index][i][wrightleg]  = 0;
+		player_weapons[player_index][i].wshots     = 0;
+		player_weapons[player_index][i].whits      = 0;
+		player_weapons[player_index][i].wkills     = 0;
+		player_weapons[player_index][i].wheadshots = 0;
+		player_weapons[player_index][i].wteamkills = 0;
+		player_weapons[player_index][i].wdamage    = 0;
+		player_weapons[player_index][i].wdeaths    = 0;
+		player_weapons[player_index][i].wgeneric   = 0;
+		player_weapons[player_index][i].whead      = 0;
+		player_weapons[player_index][i].wchest     = 0;
+		player_weapons[player_index][i].wstomach   = 0;
+		player_weapons[player_index][i].wleftarm   = 0;
+		player_weapons[player_index][i].wrightarm  = 0;
+		player_weapons[player_index][i].wleftleg   = 0;
+		player_weapons[player_index][i].wrightleg  = 0;
 
 	}
 
@@ -1418,52 +1444,52 @@ dump_player_data(player_index)
 	if (IsClientInGame(player_index))  {
 		new is_logged = 0;
 		for (new i = 0; (i < MAX_LOG_WEAPONS); i++) {
-			if (player_weapons[player_index][i][wshots] > 0) {
+			if (player_weapons[player_index][i].wshots > 0) {
 				switch (gameme_plugin.mod_id) {
 					case MOD_CSGO: {
-						LogToGame("\"%L\" triggered \"weaponstats\" (weapon \"%s\") (shots \"%d\") (hits \"%d\") (kills \"%d\") (headshots \"%d\") (tks \"%d\") (damage \"%d\") (deaths \"%d\")", player_index, csgo_weapon_list[i], player_weapons[player_index][i][wshots], player_weapons[player_index][i][whits], player_weapons[player_index][i][wkills], player_weapons[player_index][i][wheadshots], player_weapons[player_index][i][wteamkills], player_weapons[player_index][i][wdamage], player_weapons[player_index][i][wdeaths]); 
-						if (player_weapons[player_index][i][whits] > 0) {
-							LogToGame("\"%L\" triggered \"weaponstats2\" (weapon \"%s\") (head \"%d\") (chest \"%d\") (stomach \"%d\") (leftarm \"%d\") (rightarm \"%d\") (leftleg \"%d\") (rightleg \"%d\")", player_index, csgo_weapon_list[i], player_weapons[player_index][i][whead], player_weapons[player_index][i][wchest], player_weapons[player_index][i][wstomach], player_weapons[player_index][i][wleftarm], player_weapons[player_index][i][wrightarm], player_weapons[player_index][i][wleftleg], player_weapons[player_index][i][wrightleg]); 
+						LogToGame("\"%L\" triggered \"weaponstats\" (weapon \"%s\") (shots \"%d\") (hits \"%d\") (kills \"%d\") (headshots \"%d\") (tks \"%d\") (damage \"%d\") (deaths \"%d\")", player_index, csgo_weapon_list[i], player_weapons[player_index][i].wshots, player_weapons[player_index][i].whits, player_weapons[player_index][i].wkills, player_weapons[player_index][i].wheadshots, player_weapons[player_index][i].wteamkills, player_weapons[player_index][i].wdamage, player_weapons[player_index][i].wdeaths); 
+						if (player_weapons[player_index][i].whits > 0) {
+							LogToGame("\"%L\" triggered \"weaponstats2\" (weapon \"%s\") (head \"%d\") (chest \"%d\") (stomach \"%d\") (leftarm \"%d\") (rightarm \"%d\") (leftleg \"%d\") (rightleg \"%d\")", player_index, csgo_weapon_list[i], player_weapons[player_index][i].whead, player_weapons[player_index][i].wchest, player_weapons[player_index][i].wstomach, player_weapons[player_index][i].wleftarm, player_weapons[player_index][i].wrightarm, player_weapons[player_index][i].wleftleg, player_weapons[player_index][i].wrightleg); 
 						}
 					}
 					case MOD_CSS: {
-						LogToGame("\"%L\" triggered \"weaponstats\" (weapon \"%s\") (shots \"%d\") (hits \"%d\") (kills \"%d\") (headshots \"%d\") (tks \"%d\") (damage \"%d\") (deaths \"%d\")", player_index, css_weapon_list[i], player_weapons[player_index][i][wshots], player_weapons[player_index][i][whits], player_weapons[player_index][i][wkills], player_weapons[player_index][i][wheadshots], player_weapons[player_index][i][wteamkills], player_weapons[player_index][i][wdamage], player_weapons[player_index][i][wdeaths]); 
-						if (player_weapons[player_index][i][whits] > 0) {
-							LogToGame("\"%L\" triggered \"weaponstats2\" (weapon \"%s\") (head \"%d\") (chest \"%d\") (stomach \"%d\") (leftarm \"%d\") (rightarm \"%d\") (leftleg \"%d\") (rightleg \"%d\")", player_index, css_weapon_list[i], player_weapons[player_index][i][whead], player_weapons[player_index][i][wchest], player_weapons[player_index][i][wstomach], player_weapons[player_index][i][wleftarm], player_weapons[player_index][i][wrightarm], player_weapons[player_index][i][wleftleg], player_weapons[player_index][i][wrightleg]); 
+						LogToGame("\"%L\" triggered \"weaponstats\" (weapon \"%s\") (shots \"%d\") (hits \"%d\") (kills \"%d\") (headshots \"%d\") (tks \"%d\") (damage \"%d\") (deaths \"%d\")", player_index, css_weapon_list[i], player_weapons[player_index][i].wshots, player_weapons[player_index][i].whits, player_weapons[player_index][i].wkills, player_weapons[player_index][i].wheadshots, player_weapons[player_index][i].wteamkills, player_weapons[player_index][i].wdamage, player_weapons[player_index][i].wdeaths); 
+						if (player_weapons[player_index][i].whits > 0) {
+							LogToGame("\"%L\" triggered \"weaponstats2\" (weapon \"%s\") (head \"%d\") (chest \"%d\") (stomach \"%d\") (leftarm \"%d\") (rightarm \"%d\") (leftleg \"%d\") (rightleg \"%d\")", player_index, css_weapon_list[i], player_weapons[player_index][i].whead, player_weapons[player_index][i].wchest, player_weapons[player_index][i].wstomach, player_weapons[player_index][i].wleftarm, player_weapons[player_index][i].wrightarm, player_weapons[player_index][i].wleftleg, player_weapons[player_index][i].wrightleg); 
 						}
 					}
 					case MOD_DODS: {
-						LogToGame("\"%L\" triggered \"weaponstats\" (weapon \"%s\") (shots \"%d\") (hits \"%d\") (kills \"%d\") (headshots \"%d\") (tks \"%d\") (damage \"%d\") (deaths \"%d\")", player_index, dods_weapon_list[i], player_weapons[player_index][i][wshots], player_weapons[player_index][i][whits], player_weapons[player_index][i][wkills], player_weapons[player_index][i][wheadshots], player_weapons[player_index][i][wteamkills], player_weapons[player_index][i][wdamage], player_weapons[player_index][i][wdeaths]); 
-						if (player_weapons[player_index][i][whits] > 0) {
-							LogToGame("\"%L\" triggered \"weaponstats2\" (weapon \"%s\") (head \"%d\") (chest \"%d\") (stomach \"%d\") (leftarm \"%d\") (rightarm \"%d\") (leftleg \"%d\") (rightleg \"%d\")", player_index, dods_weapon_list[i], player_weapons[player_index][i][whead], player_weapons[player_index][i][wchest], player_weapons[player_index][i][wstomach], player_weapons[player_index][i][wleftarm], player_weapons[player_index][i][wrightarm], player_weapons[player_index][i][wleftleg], player_weapons[player_index][i][wrightleg]); 
+						LogToGame("\"%L\" triggered \"weaponstats\" (weapon \"%s\") (shots \"%d\") (hits \"%d\") (kills \"%d\") (headshots \"%d\") (tks \"%d\") (damage \"%d\") (deaths \"%d\")", player_index, dods_weapon_list[i], player_weapons[player_index][i].wshots, player_weapons[player_index][i].whits, player_weapons[player_index][i].wkills, player_weapons[player_index][i].wheadshots, player_weapons[player_index][i].wteamkills, player_weapons[player_index][i].wdamage, player_weapons[player_index][i].wdeaths); 
+						if (player_weapons[player_index][i].whits > 0) {
+							LogToGame("\"%L\" triggered \"weaponstats2\" (weapon \"%s\") (head \"%d\") (chest \"%d\") (stomach \"%d\") (leftarm \"%d\") (rightarm \"%d\") (leftleg \"%d\") (rightleg \"%d\")", player_index, dods_weapon_list[i], player_weapons[player_index][i].whead, player_weapons[player_index][i].wchest, player_weapons[player_index][i].wstomach, player_weapons[player_index][i].wleftarm, player_weapons[player_index][i].wrightarm, player_weapons[player_index][i].wleftleg, player_weapons[player_index][i].wrightleg); 
 						}
 					}
 					case MOD_L4D, MOD_L4DII: {
-						LogToGame("\"%L\" triggered \"weaponstats\" (weapon \"%s\") (shots \"%d\") (hits \"%d\") (kills \"%d\") (headshots \"%d\") (tks \"%d\") (damage \"%d\") (deaths \"%d\")", player_index, l4d_weapon_list[i], player_weapons[player_index][i][wshots], player_weapons[player_index][i][whits], player_weapons[player_index][i][wkills], player_weapons[player_index][i][wheadshots], player_weapons[player_index][i][wteamkills], player_weapons[player_index][i][wdamage], player_weapons[player_index][i][wdeaths]); 
-						if (player_weapons[player_index][i][whits] > 0) {
-							LogToGame("\"%L\" triggered \"weaponstats2\" (weapon \"%s\") (head \"%d\") (chest \"%d\") (stomach \"%d\") (leftarm \"%d\") (rightarm \"%d\") (leftleg \"%d\") (rightleg \"%d\")", player_index, l4d_weapon_list[i], player_weapons[player_index][i][whead], player_weapons[player_index][i][wchest], player_weapons[player_index][i][wstomach], player_weapons[player_index][i][wleftarm], player_weapons[player_index][i][wrightarm], player_weapons[player_index][i][wleftleg], player_weapons[player_index][i][wrightleg]); 
+						LogToGame("\"%L\" triggered \"weaponstats\" (weapon \"%s\") (shots \"%d\") (hits \"%d\") (kills \"%d\") (headshots \"%d\") (tks \"%d\") (damage \"%d\") (deaths \"%d\")", player_index, l4d_weapon_list[i], player_weapons[player_index][i].wshots, player_weapons[player_index][i].whits, player_weapons[player_index][i].wkills, player_weapons[player_index][i].wheadshots, player_weapons[player_index][i].wteamkills, player_weapons[player_index][i].wdamage, player_weapons[player_index][i].wdeaths); 
+						if (player_weapons[player_index][i].whits > 0) {
+							LogToGame("\"%L\" triggered \"weaponstats2\" (weapon \"%s\") (head \"%d\") (chest \"%d\") (stomach \"%d\") (leftarm \"%d\") (rightarm \"%d\") (leftleg \"%d\") (rightleg \"%d\")", player_index, l4d_weapon_list[i], player_weapons[player_index][i].whead, player_weapons[player_index][i].wchest, player_weapons[player_index][i].wstomach, player_weapons[player_index][i].wleftarm, player_weapons[player_index][i].wrightarm, player_weapons[player_index][i].wleftleg, player_weapons[player_index][i].wrightleg); 
 						}
 					}
 					case MOD_INSMOD: {								
-						LogToGame("\"%L\" triggered \"weaponstats\" (weapon \"%s\") (shots \"%d\") (hits \"%d\") (kills \"%d\") (headshots \"%d\") (tks \"%d\") (damage \"%d\") (deaths \"%d\")", player_index, insmod_weapon_list[i], player_weapons[player_index][i][wshots], player_weapons[player_index][i][whits], player_weapons[player_index][i][wkills], player_weapons[player_index][i][wheadshots], player_weapons[player_index][i][wteamkills], player_weapons[player_index][i][wdamage], player_weapons[player_index][i][wdeaths]); 
-						if (player_weapons[player_index][i][whits] > 0) {
-							LogToGame("\"%L\" triggered \"weaponstats2\" (weapon \"%s\") (head \"%d\") (chest \"%d\") (stomach \"%d\") (leftarm \"%d\") (rightarm \"%d\") (leftleg \"%d\") (rightleg \"%d\")", player_index, insmod_weapon_list[i], player_weapons[player_index][i][whead], player_weapons[player_index][i][wchest], player_weapons[player_index][i][wstomach], player_weapons[player_index][i][wleftarm], player_weapons[player_index][i][wrightarm], player_weapons[player_index][i][wleftleg], player_weapons[player_index][i][wrightleg]); 
+						LogToGame("\"%L\" triggered \"weaponstats\" (weapon \"%s\") (shots \"%d\") (hits \"%d\") (kills \"%d\") (headshots \"%d\") (tks \"%d\") (damage \"%d\") (deaths \"%d\")", player_index, insmod_weapon_list[i], player_weapons[player_index][i].wshots, player_weapons[player_index][i].whits, player_weapons[player_index][i].wkills, player_weapons[player_index][i].wheadshots, player_weapons[player_index][i].wteamkills, player_weapons[player_index][i].wdamage, player_weapons[player_index][i].wdeaths); 
+						if (player_weapons[player_index][i].whits > 0) {
+							LogToGame("\"%L\" triggered \"weaponstats2\" (weapon \"%s\") (head \"%d\") (chest \"%d\") (stomach \"%d\") (leftarm \"%d\") (rightarm \"%d\") (leftleg \"%d\") (rightleg \"%d\")", player_index, insmod_weapon_list[i], player_weapons[player_index][i].whead, player_weapons[player_index][i].wchest, player_weapons[player_index][i].wstomach, player_weapons[player_index][i].wleftarm, player_weapons[player_index][i].wrightarm, player_weapons[player_index][i].wleftleg, player_weapons[player_index][i].wrightleg); 
 						}
 					}
 					case MOD_HL2MP: {								
-						LogToGame("\"%L\" triggered \"weaponstats\" (weapon \"%s\") (shots \"%d\") (hits \"%d\") (kills \"%d\") (headshots \"%d\") (tks \"%d\") (damage \"%d\") (deaths \"%d\")", player_index, hl2mp_weapon_list[i], player_weapons[player_index][i][wshots], player_weapons[player_index][i][whits], player_weapons[player_index][i][wkills], player_weapons[player_index][i][wheadshots], player_weapons[player_index][i][wteamkills], player_weapons[player_index][i][wdamage], player_weapons[player_index][i][wdeaths]); 
-						if (player_weapons[player_index][i][whits] > 0) {
-							LogToGame("\"%L\" triggered \"weaponstats2\" (weapon \"%s\") (head \"%d\") (chest \"%d\") (stomach \"%d\") (leftarm \"%d\") (rightarm \"%d\") (leftleg \"%d\") (rightleg \"%d\")", player_index, hl2mp_weapon_list[i], player_weapons[player_index][i][whead], player_weapons[player_index][i][wchest], player_weapons[player_index][i][wstomach], player_weapons[player_index][i][wleftarm], player_weapons[player_index][i][wrightarm], player_weapons[player_index][i][wleftleg], player_weapons[player_index][i][wrightleg]); 
+						LogToGame("\"%L\" triggered \"weaponstats\" (weapon \"%s\") (shots \"%d\") (hits \"%d\") (kills \"%d\") (headshots \"%d\") (tks \"%d\") (damage \"%d\") (deaths \"%d\")", player_index, hl2mp_weapon_list[i], player_weapons[player_index][i].wshots, player_weapons[player_index][i].whits, player_weapons[player_index][i].wkills, player_weapons[player_index][i].wheadshots, player_weapons[player_index][i].wteamkills, player_weapons[player_index][i].wdamage, player_weapons[player_index][i].wdeaths); 
+						if (player_weapons[player_index][i].whits > 0) {
+							LogToGame("\"%L\" triggered \"weaponstats2\" (weapon \"%s\") (head \"%d\") (chest \"%d\") (stomach \"%d\") (leftarm \"%d\") (rightarm \"%d\") (leftleg \"%d\") (rightleg \"%d\")", player_index, hl2mp_weapon_list[i], player_weapons[player_index][i].whead, player_weapons[player_index][i].wchest, player_weapons[player_index][i].wstomach, player_weapons[player_index][i].wleftarm, player_weapons[player_index][i].wrightarm, player_weapons[player_index][i].wleftleg, player_weapons[player_index][i].wrightleg); 
 						}
 					}
 					case MOD_ZPS: {								
-						LogToGame("\"%L\" triggered \"weaponstats\" (weapon \"%s\") (shots \"%d\") (hits \"%d\") (kills \"%d\") (headshots \"%d\") (tks \"%d\") (damage \"%d\") (deaths \"%d\")", player_index, zps_weapon_list[i], player_weapons[player_index][i][wshots], player_weapons[player_index][i][whits], player_weapons[player_index][i][wkills], player_weapons[player_index][i][wheadshots], player_weapons[player_index][i][wteamkills], player_weapons[player_index][i][wdamage], player_weapons[player_index][i][wdeaths]); 
-						if (player_weapons[player_index][i][whits] > 0) {
-							LogToGame("\"%L\" triggered \"weaponstats2\" (weapon \"%s\") (head \"%d\") (chest \"%d\") (stomach \"%d\") (leftarm \"%d\") (rightarm \"%d\") (leftleg \"%d\") (rightleg \"%d\")", player_index, zps_weapon_list[i], player_weapons[player_index][i][whead], player_weapons[player_index][i][wchest], player_weapons[player_index][i][wstomach], player_weapons[player_index][i][wleftarm], player_weapons[player_index][i][wrightarm], player_weapons[player_index][i][wleftleg], player_weapons[player_index][i][wrightleg]); 
+						LogToGame("\"%L\" triggered \"weaponstats\" (weapon \"%s\") (shots \"%d\") (hits \"%d\") (kills \"%d\") (headshots \"%d\") (tks \"%d\") (damage \"%d\") (deaths \"%d\")", player_index, zps_weapon_list[i], player_weapons[player_index][i].wshots, player_weapons[player_index][i].whits, player_weapons[player_index][i].wkills, player_weapons[player_index][i].wheadshots, player_weapons[player_index][i].wteamkills, player_weapons[player_index][i].wdamage, player_weapons[player_index][i].wdeaths); 
+						if (player_weapons[player_index][i].whits > 0) {
+							LogToGame("\"%L\" triggered \"weaponstats2\" (weapon \"%s\") (head \"%d\") (chest \"%d\") (stomach \"%d\") (leftarm \"%d\") (rightarm \"%d\") (leftleg \"%d\") (rightleg \"%d\")", player_index, zps_weapon_list[i], player_weapons[player_index][i].whead, player_weapons[player_index][i].wchest, player_weapons[player_index][i].wstomach, player_weapons[player_index][i].wleftarm, player_weapons[player_index][i].wrightarm, player_weapons[player_index][i].wleftleg, player_weapons[player_index][i].wrightleg); 
 						}
 					}
 					case MOD_TF2: {								
-						LogToGame("\"%L\" triggered \"weaponstats\" (weapon \"%s\") (shots \"%d\") (hits \"%d\") (kills \"%d\") (headshots \"%d\") (tks \"%d\") (damage \"%d\") (deaths \"%d\")", player_index, tf2_weapon_list[i], player_weapons[player_index][i][wshots], player_weapons[player_index][i][whits], player_weapons[player_index][i][wkills], player_weapons[player_index][i][wheadshots], player_weapons[player_index][i][wteamkills], player_weapons[player_index][i][wdamage], player_weapons[player_index][i][wdeaths]); 
+						LogToGame("\"%L\" triggered \"weaponstats\" (weapon \"%s\") (shots \"%d\") (hits \"%d\") (kills \"%d\") (headshots \"%d\") (tks \"%d\") (damage \"%d\") (deaths \"%d\")", player_index, tf2_weapon_list[i], player_weapons[player_index][i].wshots, player_weapons[player_index][i].whits, player_weapons[player_index][i].wkills, player_weapons[player_index][i].wheadshots, player_weapons[player_index][i].wteamkills, player_weapons[player_index][i].wdamage, player_weapons[player_index][i].wdeaths); 
 					}
 				} // switch
 				is_logged++;
@@ -1493,20 +1519,20 @@ public Action: spectator_player_timer(Handle:timer, any: caller)
 			new target = GetEntPropEnt(caller, Prop_Send, "m_hObserverTarget");
 			if ((target > 0) && (target <= MaxClients) && (IsClientInGame(target))) {
 
-				if ((player_messages[caller][target].supdated == 1) || (gameme_players[caller][pspectator][starget] == 0)) {
+				if ((player_messages[caller][target].supdated == 1) || (gameme_players[caller].pspectator.starget == 0)) {
 					for (new i = 0; (i <= MAXPLAYERS); i++) {
 						player_messages[i][target].supdated = 0;
 					}
 					QueryIntGameMEStats("spectatorinfo", target, QuerygameMEStatsIntCallback, QUERY_TYPE_SPECTATOR);
 				}
 			
-				if (target != gameme_players[caller][pspectator][starget]) {
-					gameme_players[caller][pspectator][srequested] = 0.0;
+				if (target != gameme_players[caller].pspectator.starget) {
+					gameme_players[caller].pspectator.srequested = 0.0;
 				}
 
 				if (strcmp(player_messages[caller][target].smessage, "") != 0) {
 					if ((caller > 0) && (caller <= MaxClients) && (!IsFakeClient(caller)) && (IsClientInGame(caller))) {
-						if ((GetGameTime() - gameme_players[caller][pspectator][srequested]) > 5) {
+						if ((GetGameTime() - gameme_players[caller].pspectator.srequested) > 5) {
 							new Handle: message_handle = StartMessageOne("KeyHintText", caller);
 							if (message_handle != INVALID_HANDLE) {
 								if (gameme_plugin.protobuf == 1) {
@@ -1517,11 +1543,11 @@ public Action: spectator_player_timer(Handle:timer, any: caller)
 								}
 								EndMessage();
 							}
-							gameme_players[caller][pspectator][srequested] = GetGameTime();
+							gameme_players[caller].pspectator.srequested = GetGameTime();
 						}
 					}
 				} else {
-					if (target != gameme_players[caller][pspectator][starget]) {
+					if (target != gameme_players[caller].pspectator.starget) {
 						if (gameme_plugin.mod_id != MOD_CSGO) {
 							new Handle: message_handle = StartMessageOne("KeyHintText", caller);
 							if (message_handle != INVALID_HANDLE) {
@@ -1534,10 +1560,10 @@ public Action: spectator_player_timer(Handle:timer, any: caller)
 								EndMessage();
 							}
 						}
-						gameme_players[caller][pspectator][srequested] = GetGameTime();
+						gameme_players[caller].pspectator.srequested = GetGameTime();
 					}
 				}
-				gameme_players[caller][pspectator][starget] = target;
+				gameme_players[caller].pspectator.starget = target;
 			}
 		}
 	}
@@ -1551,7 +1577,7 @@ public Action: QuerygameMEStatsIntCallback(int query_command, int query_payload,
 				if (query_caller[i] > -1) {
 					strcopy(player_messages[query_caller[i]][query_target[0]].smessage, 255, query_message);
 					ReplaceString(player_messages[query_caller[i]][query_target[0]].smessage, 255, "\\n", "\10");
-					gameme_players[query_caller[i]][pspectator][srequested] = 0.0;
+					gameme_players[query_caller[i]].pspectator.srequested = 0.0;
 				}
 			}
 		}
@@ -1862,7 +1888,7 @@ public Event_CSGOPlayerFire(Handle: event, const String: name[], bool:dontBroadc
 			    (weapon_index != 35) && // smokegrenade
 			    (weapon_index != 36) && // molotov
 			    (weapon_index != 37)) { // incgrenade
-				player_weapons[userid][weapon_index][wshots]++;
+				player_weapons[userid][weapon_index].wshots++;
 			}
 		}
 	}
@@ -1883,7 +1909,7 @@ public Event_CSSPlayerFire(Handle: event, const String: name[], bool:dontBroadca
 			if ((weapon_index != 27) && // flashbang
 			    (weapon_index != 11) && // hegrenade
 			    (weapon_index != 26)) { // smokegrenade
-				player_weapons[userid][weapon_index][wshots]++;
+				player_weapons[userid][weapon_index].wshots++;
 			}
 		}
 	}
@@ -1969,7 +1995,7 @@ public Event_DODSWeaponAttack(Handle: event, const String: name[], bool:dontBroa
 			    (weapon_index != 22) && // riflegren_us
 			    (weapon_index != 23) && // smoke_ger
 			    (weapon_index != 24)) { // smoke_us
-				player_weapons[userid][weapon_index][wshots]++;
+				player_weapons[userid][weapon_index].wshots++;
 			}
 		}
 	}
@@ -1993,7 +2019,7 @@ public Event_L4DPlayerFire(Handle: event, const String: name[], bool:dontBroadca
 		if (weapon_index > -1) {
 			if ((weapon_index != 12) && // entityflame
 			    (weapon_index != 6)) { // inferno
-				player_weapons[userid][weapon_index][wshots]++;
+				player_weapons[userid][weapon_index].wshots++;
 			}
 		}
 	}
@@ -2019,16 +2045,32 @@ public Event_CSGOPlayerHurt(Handle: event, const String: name[], bool:dontBroadc
 		GetEventString(event, "weapon", weapon_str, 32);
 		new weapon_index = get_weapon_index(csgo_weapon_list, MAX_CSGO_WEAPON_COUNT, weapon_str);
 		if (weapon_index > -1) {
-			if (player_weapons[attacker][weapon_index][wshots] == 0) {
-				player_weapons[attacker][weapon_index][wshots]++;
+			if (player_weapons[attacker][weapon_index].wshots == 0) {
+				player_weapons[attacker][weapon_index].wshots++;
 			}
-			player_weapons[attacker][weapon_index][whits]++;
-			player_weapons[attacker][weapon_index][wdamage] += GetEventInt(event, "dmg_health");
+			player_weapons[attacker][weapon_index].whits++;
+			player_weapons[attacker][weapon_index].wdamage += GetEventInt(event, "dmg_health");
 			new hitgroup  = GetEventInt(event, "hitgroup");
-			if (hitgroup < 8) {
-				player_weapons[attacker][weapon_index][hitgroup + LOG_HIT_OFFSET]++;
+			if ((hitgroup >= 0) && (hitgroup < 8)) {
+				switch (hitgroup) {
+					case HITGROUP_GENERIC:
+						player_weapons[attacker][weapon_index].wgeneric++;
+					case HITGROUP_HEAD:
+						player_weapons[attacker][weapon_index].whead++;
+					case HITGROUP_CHEST:
+						player_weapons[attacker][weapon_index].wchest++;
+					case HITGROUP_STOMACH:
+						player_weapons[attacker][weapon_index].wstomach++;
+					case HITGROUP_LEFTARM:
+						player_weapons[attacker][weapon_index].wleftarm++;
+					case HITGROUP_RIGHTARM:
+						player_weapons[attacker][weapon_index].wrightarm++;
+					case HITGROUP_LEFTLEG:
+						player_weapons[attacker][weapon_index].wleftleg++;
+					case HITGROUP_RIGHTLEG:
+						player_weapons[attacker][weapon_index].wrightleg++;
+				}
 			}
-
 
 			if (gameme_plugin.damage_display == 1) {
 				player_damage[attacker][victim][dhits]++;
@@ -2058,14 +2100,31 @@ public Event_CSSPlayerHurt(Handle: event, const String: name[], bool:dontBroadca
 		GetEventString(event, "weapon", weapon_str, 32);
 		new weapon_index = get_weapon_index(css_weapon_list, MAX_CSS_WEAPON_COUNT, weapon_str);
 		if (weapon_index > -1) {
-			if (player_weapons[attacker][weapon_index][wshots] == 0) {
-				player_weapons[attacker][weapon_index][wshots]++;
+			if (player_weapons[attacker][weapon_index].wshots == 0) {
+				player_weapons[attacker][weapon_index].wshots++;
 			}
-			player_weapons[attacker][weapon_index][whits]++;
-			player_weapons[attacker][weapon_index][wdamage] += GetEventInt(event, "dmg_health");
+			player_weapons[attacker][weapon_index].whits++;
+			player_weapons[attacker][weapon_index].wdamage += GetEventInt(event, "dmg_health");
 			new hitgroup  = GetEventInt(event, "hitgroup");
-			if (hitgroup < 8) {
-				player_weapons[attacker][weapon_index][hitgroup + LOG_HIT_OFFSET]++;
+			if ((hitgroup >= 0) && (hitgroup < 8)) {
+				switch (hitgroup) {
+					case HITGROUP_GENERIC:
+						player_weapons[attacker][weapon_index].wgeneric++;
+					case HITGROUP_HEAD:
+						player_weapons[attacker][weapon_index].whead++;
+					case HITGROUP_CHEST:
+						player_weapons[attacker][weapon_index].wchest++;
+					case HITGROUP_STOMACH:
+						player_weapons[attacker][weapon_index].wstomach++;
+					case HITGROUP_LEFTARM:
+						player_weapons[attacker][weapon_index].wleftarm++;
+					case HITGROUP_RIGHTARM:
+						player_weapons[attacker][weapon_index].wrightarm++;
+					case HITGROUP_LEFTLEG:
+						player_weapons[attacker][weapon_index].wleftleg++;
+					case HITGROUP_RIGHTLEG:
+						player_weapons[attacker][weapon_index].wrightleg++;
+				}
 			}
 
 			if (gameme_plugin.damage_display == 1) {
@@ -2094,14 +2153,31 @@ public Event_DODSPlayerHurt(Handle: event, const String: name[], bool:dontBroadc
 		GetEventString(event, "weapon", weapon_str, 32);
 		new weapon_index = get_weapon_index(dods_weapon_list, MAX_DODS_WEAPON_COUNT, weapon_str);
 		if (weapon_index > -1) {
-			if (player_weapons[attacker][weapon_index][wshots] == 0) {
-				player_weapons[attacker][weapon_index][wshots]++;
+			if (player_weapons[attacker][weapon_index].wshots == 0) {
+				player_weapons[attacker][weapon_index].wshots++;
 			}
-			player_weapons[attacker][weapon_index][whits]++;
-			player_weapons[attacker][weapon_index][wdamage] += GetEventInt(event, "health");
+			player_weapons[attacker][weapon_index].whits++;
+			player_weapons[attacker][weapon_index].wdamage += GetEventInt(event, "health");
 			new hitgroup  = GetEventInt(event, "hitgroup");
-			if (hitgroup < 8) {
-				player_weapons[attacker][weapon_index][hitgroup + LOG_HIT_OFFSET]++;
+			if ((hitgroup >= 0) && (hitgroup < 8)) {
+				switch (hitgroup) {
+					case HITGROUP_GENERIC:
+						player_weapons[attacker][weapon_index].wgeneric++;
+					case HITGROUP_HEAD:
+						player_weapons[attacker][weapon_index].whead++;
+					case HITGROUP_CHEST:
+						player_weapons[attacker][weapon_index].wchest++;
+					case HITGROUP_STOMACH:
+						player_weapons[attacker][weapon_index].wstomach++;
+					case HITGROUP_LEFTARM:
+						player_weapons[attacker][weapon_index].wleftarm++;
+					case HITGROUP_RIGHTARM:
+						player_weapons[attacker][weapon_index].wrightarm++;
+					case HITGROUP_LEFTLEG:
+						player_weapons[attacker][weapon_index].wleftleg++;
+					case HITGROUP_RIGHTLEG:
+						player_weapons[attacker][weapon_index].wrightleg++;
+				}
 			}
 
 			if (gameme_plugin.damage_display == 1) {
@@ -2135,14 +2211,31 @@ public Event_L4DPlayerHurt(Handle: event, const String: name[], bool:dontBroadca
 		GetEventString(event, "weapon", weapon_str, 32);
 		new weapon_index = get_weapon_index(l4d_weapon_list, MAX_L4D_WEAPON_COUNT, weapon_str);
 		if (weapon_index > -1) {
-			if (player_weapons[attacker][weapon_index][wshots] == 0) {
-				player_weapons[attacker][weapon_index][wshots]++;
+			if (player_weapons[attacker][weapon_index].wshots == 0) {
+				player_weapons[attacker][weapon_index].wshots++;
 			}
-			player_weapons[attacker][weapon_index][whits]++;
-			player_weapons[attacker][weapon_index][wdamage] += GetEventInt(event, "dmg_health");
+			player_weapons[attacker][weapon_index].whits++;
+			player_weapons[attacker][weapon_index].wdamage += GetEventInt(event, "dmg_health");
 			new hitgroup  = GetEventInt(event, "hitgroup");
-			if (hitgroup < 8) {
-				player_weapons[attacker][weapon_index][hitgroup + LOG_HIT_OFFSET]++;
+			if ((hitgroup >= 0) && (hitgroup < 8)) {
+				switch (hitgroup) {
+					case HITGROUP_GENERIC:
+						player_weapons[attacker][weapon_index].wgeneric++;
+					case HITGROUP_HEAD:
+						player_weapons[attacker][weapon_index].whead++;
+					case HITGROUP_CHEST:
+						player_weapons[attacker][weapon_index].wchest++;
+					case HITGROUP_STOMACH:
+						player_weapons[attacker][weapon_index].wstomach++;
+					case HITGROUP_LEFTARM:
+						player_weapons[attacker][weapon_index].wleftarm++;
+					case HITGROUP_RIGHTARM:
+						player_weapons[attacker][weapon_index].wrightarm++;
+					case HITGROUP_LEFTLEG:
+						player_weapons[attacker][weapon_index].wleftleg++;
+					case HITGROUP_RIGHTLEG:
+						player_weapons[attacker][weapon_index].wrightleg++;
+				}
 			}
 
 		} else if (!strcmp(weapon_str, "insect_swarm")) {
@@ -2170,15 +2263,32 @@ public Event_L4DInfectedHurt(Handle: event, const String: name[], bool:dontBroad
 		GetClientWeapon(attacker, weapon_str, 32);
 		new weapon_index = get_weapon_index(l4d_weapon_list, MAX_L4D_WEAPON_COUNT, weapon_str[7]);
 		if (weapon_index > -1) {
-			if (player_weapons[attacker][weapon_index][wshots] == 0) {
-				player_weapons[attacker][weapon_index][wshots]++;
+			if (player_weapons[attacker][weapon_index].wshots == 0) {
+				player_weapons[attacker][weapon_index].wshots++;
 			}
-			player_weapons[attacker][weapon_index][whits]++;
-			player_weapons[attacker][weapon_index][wdamage] += GetEventInt(event, "amount");
+			player_weapons[attacker][weapon_index].whits++;
+			player_weapons[attacker][weapon_index].wdamage += GetEventInt(event, "amount");
 
 			new hitgroup  = GetEventInt(event, "hitgroup");
-			if (hitgroup < 8) {
-				player_weapons[attacker][weapon_index][hitgroup + LOG_HIT_OFFSET]++;
+			if ((hitgroup >= 0) && (hitgroup < 8)) {
+				switch (hitgroup) {
+					case HITGROUP_GENERIC:
+						player_weapons[attacker][weapon_index].wgeneric++;
+					case HITGROUP_HEAD:
+						player_weapons[attacker][weapon_index].whead++;
+					case HITGROUP_CHEST:
+						player_weapons[attacker][weapon_index].wchest++;
+					case HITGROUP_STOMACH:
+						player_weapons[attacker][weapon_index].wstomach++;
+					case HITGROUP_LEFTARM:
+						player_weapons[attacker][weapon_index].wleftarm++;
+					case HITGROUP_RIGHTARM:
+						player_weapons[attacker][weapon_index].wrightarm++;
+					case HITGROUP_LEFTLEG:
+						player_weapons[attacker][weapon_index].wleftleg++;
+					case HITGROUP_RIGHTLEG:
+						player_weapons[attacker][weapon_index].wrightleg++;
+				}
 			}
 
 		}
@@ -2207,12 +2317,12 @@ public Event_CSGOPlayerDeath(Handle: event, const String: name[], bool:dontBroad
 			GetEventString(event, "weapon", weapon_str, 32);
 			weapon_index = get_weapon_index(csgo_weapon_list, MAX_CSGO_WEAPON_COUNT, weapon_str);
 			if (weapon_index > -1) {
-				player_weapons[attacker][weapon_index][wkills]++;
+				player_weapons[attacker][weapon_index].wkills++;
 				new headshot = GetEventBool(event, "headshot");
 				if (headshot == 1) {
-					player_weapons[attacker][weapon_index][wheadshots]++;
+					player_weapons[attacker][weapon_index].wheadshots++;
 				}
-				player_weapons[victim][weapon_index][wdeaths]++;
+				player_weapons[victim][weapon_index].wdeaths++;
 
 				if (GetEventInt(event, "dominated")) {
 					log_player_player_event(attacker, victim, "triggered", "domination");
@@ -2221,7 +2331,7 @@ public Event_CSGOPlayerDeath(Handle: event, const String: name[], bool:dontBroad
 				}
 
 				if (GetClientTeam(attacker) == GetClientTeam(victim)) {
-					player_weapons[attacker][weapon_index][wteamkills]++;
+					player_weapons[attacker][weapon_index].wteamkills++;
 					if (gameme_plugin.damage_display == 1) {
 						player_damage[attacker][victim][dteamkill] += 1;
 					}		
@@ -2252,7 +2362,7 @@ public Event_CSGOPlayerDeath(Handle: event, const String: name[], bool:dontBroad
 		}
 		dump_player_data(victim);
 		
-		gameme_players[victim][palive] = 0;
+		gameme_players[victim].palive = 0;
 		if (gameme_plugin.display_spectator == 1) {
 			if ((victim > 0) && (attacker > 0)) {
 				if ((IsClientInGame(victim)) && (!IsFakeClient(victim))) {
@@ -2262,7 +2372,7 @@ public Event_CSGOPlayerDeath(Handle: event, const String: name[], bool:dontBroad
 						// as well. Hopefully the player disconnect event gets a flag if the kill is triggered
 						// by the disconnect event.
 					} else {
-						gameme_players[victim][pspectator][stimer] = CreateTimer(SPECTATOR_TIMER_INTERVAL, spectator_player_timer, victim, TIMER_REPEAT | TIMER_FLAG_NO_MAPCHANGE);
+						gameme_players[victim].pspectator.stimer = CreateTimer(SPECTATOR_TIMER_INTERVAL, spectator_player_timer, victim, TIMER_REPEAT | TIMER_FLAG_NO_MAPCHANGE);
 					}
 				}
 			}
@@ -2295,12 +2405,12 @@ public Event_CSSPlayerDeath(Handle: event, const String: name[], bool:dontBroadc
 			GetEventString(event, "weapon", weapon_str, 32);
 			new weapon_index = get_weapon_index(css_weapon_list, MAX_CSS_WEAPON_COUNT, weapon_str);
 			if (weapon_index > -1) {
-				player_weapons[attacker][weapon_index][wkills]++;
+				player_weapons[attacker][weapon_index].wkills++;
 				new headshot = GetEventBool(event, "headshot");
 				if (headshot == 1) {
-					player_weapons[attacker][weapon_index][wheadshots]++;
+					player_weapons[attacker][weapon_index].wheadshots++;
 				}
-				player_weapons[victim][weapon_index][wdeaths]++;
+				player_weapons[victim][weapon_index].wdeaths++;
 
 				if (GetEventInt(event, "dominated")) {
 					log_player_player_event(attacker, victim, "triggered", "domination");
@@ -2310,7 +2420,7 @@ public Event_CSSPlayerDeath(Handle: event, const String: name[], bool:dontBroadc
 
 
 				if (GetClientTeam(attacker) == GetClientTeam(victim)) {
-					player_weapons[attacker][weapon_index][wteamkills]++;
+					player_weapons[attacker][weapon_index].wteamkills++;
 					if (gameme_plugin.damage_display == 1) {
 						player_damage[attacker][victim][dteamkill] += 1;
 					}		
@@ -2336,10 +2446,10 @@ public Event_CSSPlayerDeath(Handle: event, const String: name[], bool:dontBroadc
 		}
 		dump_player_data(victim);
 		
-		gameme_players[victim][palive] = 0;
+		gameme_players[victim].palive = 0;
 		if (gameme_plugin.display_spectator == 1) {
 			if ((IsClientInGame(victim)) && (!IsFakeClient(victim))) {
-				gameme_players[victim][pspectator][stimer] = CreateTimer(SPECTATOR_TIMER_INTERVAL, spectator_player_timer, victim, TIMER_REPEAT | TIMER_FLAG_NO_MAPCHANGE);
+				gameme_players[victim].pspectator.stimer = CreateTimer(SPECTATOR_TIMER_INTERVAL, spectator_player_timer, victim, TIMER_REPEAT | TIMER_FLAG_NO_MAPCHANGE);
 			}
 
 			for (new j = 0; (j <= MAXPLAYERS); j++) {
@@ -2367,11 +2477,11 @@ public Event_DODSPlayerDeath(Handle: event, const String: name[], bool:dontBroad
 			GetEventString(event, "weapon", weapon_str, 32);
 			new weapon_index = get_weapon_index(dods_weapon_list, MAX_DODS_WEAPON_COUNT, weapon_str);
 			if (weapon_index > -1) {
-				player_weapons[attacker][weapon_index][wkills]++;
-				player_weapons[victim][weapon_index][wdeaths]++;
+				player_weapons[attacker][weapon_index].wkills++;
+				player_weapons[victim][weapon_index].wdeaths++;
 
 				if (GetClientTeam(attacker) == GetClientTeam(victim)) {
-					player_weapons[attacker][weapon_index][wteamkills]++;
+					player_weapons[attacker][weapon_index].wteamkills++;
 					if (gameme_plugin.damage_display == 1) {
 						player_damage[attacker][victim][dteamkill] += 1;
 					}		
@@ -2422,15 +2532,15 @@ public Event_L4DPlayerDeath(Handle: event, const String: name[], bool:dontBroadc
 			GetEventString(event, "weapon", weapon_str, 32);
 			new weapon_index = get_weapon_index(l4d_weapon_list, MAX_L4D_WEAPON_COUNT, weapon_str);
 			if (weapon_index > -1) {
-				player_weapons[attacker][weapon_index][wkills]++;
+				player_weapons[attacker][weapon_index].wkills++;
 				new headshot = GetEventBool(event, "headshot");
 				if (headshot == 1) {
-					player_weapons[attacker][weapon_index][wheadshots]++;
+					player_weapons[attacker][weapon_index].wheadshots++;
 				}
-				player_weapons[victim][weapon_index][wdeaths]++;
+				player_weapons[victim][weapon_index].wdeaths++;
 
 				if (GetClientTeam(attacker) == GetClientTeam(victim)) {
-					player_weapons[attacker][weapon_index][wteamkills]++;
+					player_weapons[attacker][weapon_index].wteamkills++;
 				}
 			}
 		}
@@ -2455,10 +2565,10 @@ public Event_HL2MPPlayerDeath(Handle: event, const String: name[], bool:dontBroa
 			GetEventString(event, "weapon", weapon_str, 32);
 			new weapon_index = get_weapon_index(hl2mp_weapon_list, MAX_HL2MP_WEAPON_COUNT, weapon_str);
 			if (weapon_index > -1) {
-				player_weapons[attacker][weapon_index][wkills]++;		
-				player_weapons[victim][weapon_index][wdeaths]++;
+				player_weapons[attacker][weapon_index].wkills++;		
+				player_weapons[victim][weapon_index].wdeaths++;
 				if ((hl2mp_data[teamplay_enabled]) && (GetClientTeam(attacker) == GetClientTeam(victim))) {
-					player_weapons[attacker][weapon_index][wteamkills]++;
+					player_weapons[attacker][weapon_index].wteamkills++;
 				}	
 			}
 		}
@@ -2483,10 +2593,10 @@ public Event_ZPSPlayerDeath(Handle: event, const String: name[], bool:dontBroadc
 			GetEventString(event, "weapon", weapon_str, 32);
 			new weapon_index = get_weapon_index(zps_weapon_list, MAX_ZPS_WEAPON_COUNT, weapon_str);
 			if (weapon_index > -1) {
-				player_weapons[attacker][weapon_index][wkills]++;		
-				player_weapons[victim][weapon_index][wdeaths]++;
+				player_weapons[attacker][weapon_index].wkills++;		
+				player_weapons[victim][weapon_index].wdeaths++;
 				if (GetClientTeam(attacker) == GetClientTeam(victim)) {
-					player_weapons[attacker][weapon_index][wteamkills]++;
+					player_weapons[attacker][weapon_index].wteamkills++;
 				}
 			}
 		}
@@ -2501,9 +2611,9 @@ public Event_CSGOPlayerSpawn(Handle: event, const String: name[], bool:dontBroad
 	if (userid > 0) {
 		reset_player_data(userid);
 		if (gameme_plugin.display_spectator == 1) {
-			if (gameme_players[userid][pspectator][stimer] != INVALID_HANDLE) {
-				KillTimer(gameme_players[userid][pspectator][stimer]);
-				gameme_players[userid][pspectator][stimer] = INVALID_HANDLE;
+			if (gameme_players[userid].pspectator.stimer != INVALID_HANDLE) {
+				KillTimer(gameme_players[userid].pspectator.stimer);
+				gameme_players[userid].pspectator.stimer = INVALID_HANDLE;
 			}
 		}
 		
@@ -2523,8 +2633,8 @@ public Event_CSGOPlayerSpawn(Handle: event, const String: name[], bool:dontBroad
 				}
 		
 				if (role_index > -1) {
-					if (gameme_players[userid][prole] != role_index) {
-						gameme_players[userid][prole] = role_index;
+					if (gameme_players[userid].prole != role_index) {
+						gameme_players[userid].prole = role_index;
 						LogToGame("\"%L\" changed role to \"%s\"", userid, csgo_code_models[role_index]);
 					}
 				}
@@ -2532,9 +2642,9 @@ public Event_CSGOPlayerSpawn(Handle: event, const String: name[], bool:dontBroad
 			} else if (client_team == 0) {
 
 				if (gameme_plugin.display_spectator == 1) {
-					gameme_players[userid][pspectator][starget] = 0;
+					gameme_players[userid].pspectator.starget = 0;
 					if (!IsFakeClient(userid)) {
-						gameme_players[userid][pspectator][stimer] = CreateTimer(SPECTATOR_TIMER_INTERVAL, spectator_player_timer, userid, TIMER_REPEAT | TIMER_FLAG_NO_MAPCHANGE);
+						gameme_players[userid].pspectator.stimer = CreateTimer(SPECTATOR_TIMER_INTERVAL, spectator_player_timer, userid, TIMER_REPEAT | TIMER_FLAG_NO_MAPCHANGE);
 					}
 				}
 
@@ -2551,9 +2661,9 @@ public Event_CSSPlayerSpawn(Handle: event, const String: name[], bool:dontBroadc
 	if (userid > 0) {
 		reset_player_data(userid);
 		if (gameme_plugin.display_spectator == 1) {
-			if (gameme_players[userid][pspectator][stimer] != INVALID_HANDLE) {
-				KillTimer(gameme_players[userid][pspectator][stimer]);
-				gameme_players[userid][pspectator][stimer] = INVALID_HANDLE;
+			if (gameme_players[userid].pspectator.stimer != INVALID_HANDLE) {
+				KillTimer(gameme_players[userid].pspectator.stimer);
+				gameme_players[userid].pspectator.stimer = INVALID_HANDLE;
 			}
 		}
 
@@ -2581,8 +2691,8 @@ public Event_CSSPlayerSpawn(Handle: event, const String: name[], bool:dontBroadc
 				}
 			
 				if (role_index > -1) {
-					if (gameme_players[userid][prole] != role_index) {
-						gameme_players[userid][prole] = role_index;
+					if (gameme_players[userid].prole != role_index) {
+						gameme_players[userid].prole = role_index;
 						LogToGame("\"%L\" changed role to \"%s\"", userid, css_code_models[role_index]);
 					}
 				}
@@ -2590,10 +2700,10 @@ public Event_CSSPlayerSpawn(Handle: event, const String: name[], bool:dontBroadc
 			} else if (client_team == 0) {
 
 				if (gameme_plugin.display_spectator == 1) {
-					gameme_players[userid][pspectator][starget] = 0;
+					gameme_players[userid].pspectator.starget = 0;
 
 					if (!IsFakeClient(userid)) {
-						gameme_players[userid][pspectator][stimer] = CreateTimer(SPECTATOR_TIMER_INTERVAL, spectator_player_timer, userid, TIMER_REPEAT | TIMER_FLAG_NO_MAPCHANGE);
+						gameme_players[userid].pspectator.stimer = CreateTimer(SPECTATOR_TIMER_INTERVAL, spectator_player_timer, userid, TIMER_REPEAT | TIMER_FLAG_NO_MAPCHANGE);
 					}
 				}
 
@@ -2641,9 +2751,9 @@ public Event_CSGORoundStart(Handle: event, const String: name[], bool:dontBroadc
 {
 	if (gameme_plugin.display_spectator == 1) {
 		for (new i = 1; (i <= MaxClients); i++) {
-			if (gameme_players[i][pspectator][stimer] != INVALID_HANDLE) {
-				KillTimer(gameme_players[i][pspectator][stimer]);
-				gameme_players[i][pspectator][stimer] = INVALID_HANDLE;
+			if (gameme_players[i].pspectator.stimer != INVALID_HANDLE) {
+				KillTimer(gameme_players[i].pspectator.stimer);
+				gameme_players[i].pspectator.stimer = INVALID_HANDLE;
 			}
 
 			for (new j = 0; (j <= MAXPLAYERS); j++) {
@@ -2651,7 +2761,7 @@ public Event_CSGORoundStart(Handle: event, const String: name[], bool:dontBroadc
 			}
 
 			if ((i > 0) && (IsClientInGame(i)) && (!IsFakeClient(i)) && (IsClientObserver(i))) {
-				gameme_players[i][pspectator][stimer] = CreateTimer(SPECTATOR_TIMER_INTERVAL, spectator_player_timer, i, TIMER_REPEAT | TIMER_FLAG_NO_MAPCHANGE);
+				gameme_players[i].pspectator.stimer = CreateTimer(SPECTATOR_TIMER_INTERVAL, spectator_player_timer, i, TIMER_REPEAT | TIMER_FLAG_NO_MAPCHANGE);
 			}
 		}
 	}
@@ -2663,9 +2773,9 @@ public Event_CSSRoundStart(Handle: event, const String: name[], bool:dontBroadca
 	if (gameme_plugin.display_spectator == 1) {
 		for (new i = 1; (i <= MaxClients); i++) {
 
-			if (gameme_players[i][pspectator][stimer] != INVALID_HANDLE) {
-				KillTimer(gameme_players[i][pspectator][stimer]);
-				gameme_players[i][pspectator][stimer] = INVALID_HANDLE;
+			if (gameme_players[i].pspectator.stimer != INVALID_HANDLE) {
+				KillTimer(gameme_players[i].pspectator.stimer);
+				gameme_players[i].pspectator.stimer = INVALID_HANDLE;
 			}
 
 			for (new j = 0; (j <= MAXPLAYERS); j++) {
@@ -2673,7 +2783,7 @@ public Event_CSSRoundStart(Handle: event, const String: name[], bool:dontBroadca
 			}
 
 			if ((i > 0) && (IsClientInGame(i)) && (!IsFakeClient(i)) && (IsClientObserver(i))) {
-				gameme_players[i][pspectator][stimer] = CreateTimer(SPECTATOR_TIMER_INTERVAL, spectator_player_timer, i, TIMER_REPEAT | TIMER_FLAG_NO_MAPCHANGE);
+				gameme_players[i].pspectator.stimer = CreateTimer(SPECTATOR_TIMER_INTERVAL, spectator_player_timer, i, TIMER_REPEAT | TIMER_FLAG_NO_MAPCHANGE);
 			}
 		}
 	}
@@ -2763,7 +2873,7 @@ public Event_CSGOAnnounceMatchStart(Handle: event, const String: name[], bool:do
 {
 	for (new i = 0; (i <= MAXPLAYERS); i++) {
 		reset_player_data(i);
-		gameme_players[i][pgglevel] = 0;
+		gameme_players[i].pgglevel = 0;
 	}
 	LogToGame("World triggered \"Round_Match_Start\"");
 }
@@ -2780,12 +2890,12 @@ public Event_CSGOGGLevelUp(Handle: event, const String: name[], bool:dontBroadca
 
 		new level = GetEventInt(event,"weaponrank");
 		if (level >= 0) {
-			if (level > gameme_players[player][pgglevel]) {
+			if (level > gameme_players[player].pgglevel) {
 				log_player_event(player, "triggered", "gg_levelup");
-			} else if (level < gameme_players[player][pgglevel]) {
+			} else if (level < gameme_players[player].pgglevel) {
 				log_player_event(player, "triggered", "gg_leveldown");
 			}
-			gameme_players[player][pgglevel] = level;
+			gameme_players[player].pgglevel = level;
 		}
 	}
 }
@@ -2892,17 +3002,17 @@ public Event_TF2PlayerDeath(Handle: event, const String: name[], bool:dontBroadc
 		GetEventString(event, "weapon_logclassname", weapon_log_name, 64);
 		new weapon_index = get_tf2_weapon_index(weapon_log_name, attacker);
 		if (weapon_index != -1) {
-			player_weapons[attacker][weapon_index][wkills]++;
+			player_weapons[attacker][weapon_index].wkills++;
 			if (custom_kill == TF_CUSTOM_HEADSHOT) {
-				player_weapons[attacker][weapon_index][wheadshots]++;
+				player_weapons[attacker][weapon_index].wheadshots++;
 			}
-			player_weapons[victim][weapon_index][wdeaths]++;
+			player_weapons[victim][weapon_index].wdeaths++;
 			if (GetClientTeam(victim) == GetClientTeam(attacker)) {
-				player_weapons[attacker][weapon_index][wteamkills]++;
+				player_weapons[attacker][weapon_index].wteamkills++;
 			}
 		}
 		dump_player_data(victim);
-		gameme_players[victim][palive] = 0;
+		gameme_players[victim].palive = 0;
 	}
 }
 
@@ -2933,7 +3043,7 @@ public OnGameFrame()
 				if ((owner < 0) || (owner > MaxClients)) {
 					continue;
 				}
-				player_weapons[owner][HL2MP_CROSSBOW][wshots]++;
+				player_weapons[owner][HL2MP_CROSSBOW].wshots++;
 			}
 		}
 		case MOD_TF2: {
@@ -2943,7 +3053,7 @@ public OnGameFrame()
 					if (IsValidEntity(entity)) {
 						new owner = GetEntPropEnt(entity, Prop_Send, "m_hThrower");
 						if ((owner > 0) && (owner <= MaxClients)) {
-							player_weapons[owner][tf2_data[stun_ball_id]][wshots]++;
+							player_weapons[owner][tf2_data[stun_ball_id]].wshots++;
 						}
 					}
 				}
@@ -3076,9 +3186,9 @@ public OnDisplaySpectatorinfoChange(Handle:cvar, const String:oldVal[], const St
 					} else if (display_info == 0) {
 						gameme_plugin.display_spectator = 0;
 						for (new i = 1; (i <= MaxClients); i++) {
-							if (gameme_players[i][pspectator][stimer] != INVALID_HANDLE) {
-								KillTimer(gameme_players[i][pspectator][stimer]);
-								gameme_players[i][pspectator][stimer] = INVALID_HANDLE;
+							if (gameme_players[i].pspectator.stimer != INVALID_HANDLE) {
+								KillTimer(gameme_players[i].pspectator.stimer);
+								gameme_players[i].pspectator.stimer = INVALID_HANDLE;
 							}
 						}
 						LogToGame("gameME spectator displaying deactivated");
@@ -3161,7 +3271,7 @@ public OnProtectAddressChange(Handle:cvar, const String:oldVal[], const String:n
 			ServerCommand(log_command);
 
 			for (new i = 0; (i <= MAXPLAYERS); i++) {
-				gameme_players[i][prole] = -1;
+				gameme_players[i].prole = -1;
 			}
 		}
 	}
@@ -3183,7 +3293,7 @@ public Action: ProtectLoggingChange(args)
 				}
 			} else if ((strcmp(log_action, "on") == 0) || (strcmp(log_action, "1") == 0)) {
 				for (new i = 0; (i <= MAXPLAYERS); i++) {
-					gameme_players[i][prole] = -1;
+					gameme_players[i].prole = -1;
 				}
 			}
 			
@@ -3298,7 +3408,7 @@ public Action: TF2_CalcIsAttackCritical(attacker, weapon, String: weaponname[], 
 	if ((gameme_plugin.sdkhook_available) && (attacker > 0) && (attacker <= MaxClients)) {
 		new weapon_index = get_tf2_weapon_index(weaponname[TF2_WEAPON_PREFIX_LENGTH], attacker);
 		if (weapon_index != -1) {
-			player_weapons[attacker][weapon_index][wshots]++;
+			player_weapons[attacker][weapon_index].wshots++;
 		}
 	}
 	return Plugin_Continue;
@@ -3465,9 +3575,9 @@ public OnClientDisconnect(client)
 		}
 		
 		if ((gameme_plugin.mod_id == MOD_CSGO) || (gameme_plugin.mod_id == MOD_CSS)) {
-			if (gameme_players[client][pspectator][stimer] != INVALID_HANDLE) {
-				KillTimer(gameme_players[client][pspectator][stimer]);
-				gameme_players[client][pspectator][stimer] = INVALID_HANDLE;
+			if (gameme_players[client].pspectator.stimer != INVALID_HANDLE) {
+				KillTimer(gameme_players[client].pspectator.stimer);
+				gameme_players[client].pspectator.stimer = INVALID_HANDLE;
 			}
 			for (new j = 0; (j <= MAXPLAYERS); j++) {
 				player_messages[j][client].supdated = 1;
@@ -5839,8 +5949,8 @@ public OnTF2TakeDamage_Post(victim, attacker, inflictor, Float:damage, damagetyp
 		}
 
 		if (weapon_index > -1) {
-			player_weapons[attacker][weapon_index][wdamage] += idamage;
-			player_weapons[attacker][weapon_index][whits]++;
+			player_weapons[attacker][weapon_index].wdamage += idamage;
+			player_weapons[attacker][weapon_index].whits++;
 		}
 	}
 }
@@ -5899,7 +6009,7 @@ public Event_TF2ObjectDeflected(Handle:event, const String:name[], bool:dontBroa
 				if (gameme_plugin.sdkhook_available) {
 					new weapon_index = get_tf2_weapon_index("deflect_arrow");
 					if (weapon_index > -1) {
-						player_weapons[client][weapon_index][wshots]++;
+						player_weapons[client][weapon_index].wshots++;
 					}
 				}
 			}
@@ -5907,7 +6017,7 @@ public Event_TF2ObjectDeflected(Handle:event, const String:name[], bool:dontBroa
 				if (gameme_plugin.sdkhook_available) {
 					new weapon_index = get_tf2_weapon_index("deflect_flare");
 					if(weapon_index > -1) {
-						player_weapons[client][weapon_index][wshots]++;
+						player_weapons[client][weapon_index].wshots++;
 					}
 				}
 			}
@@ -5915,7 +6025,7 @@ public Event_TF2ObjectDeflected(Handle:event, const String:name[], bool:dontBroa
 				if (gameme_plugin.sdkhook_available) {
 					new weapon_index = get_tf2_weapon_index("deflect_rocket");
 					if(weapon_index > -1) {
-						player_weapons[client][weapon_index][wshots]++;
+						player_weapons[client][weapon_index].wshots++;
 					}
 				}
 			}
@@ -5923,7 +6033,7 @@ public Event_TF2ObjectDeflected(Handle:event, const String:name[], bool:dontBroa
 				if (gameme_plugin.sdkhook_available) {
 					new weapon_index = get_tf2_weapon_index("deflect_rocket");
 					if(weapon_index > -1) {
-						player_weapons[client][weapon_index][wshots]++;
+						player_weapons[client][weapon_index].wshots++;
 					}
 				}
 			}
@@ -5931,7 +6041,7 @@ public Event_TF2ObjectDeflected(Handle:event, const String:name[], bool:dontBroa
 				if (gameme_plugin.sdkhook_available) {
 					new weapon_index = get_tf2_weapon_index("deflect_promode");
 					if(weapon_index > -1) {
-						player_weapons[client][weapon_index][wshots]++;
+						player_weapons[client][weapon_index].wshots++;
 					}
 				}
 			}
@@ -5948,7 +6058,7 @@ public OnHL2MPFireBullets(attacker, shots, String: weapon_str[])
 		GetClientWeapon(attacker, weapon_name, 32);
 		new weapon_index = get_weapon_index(hl2mp_weapon_list, MAX_HL2MP_WEAPON_COUNT, weapon_name[7]);
 		if (weapon_index > -1) {
-			player_weapons[attacker][weapon_index][wshots]++;
+			player_weapons[attacker][weapon_index].wshots++;
 		}
 	}
 }
@@ -5987,17 +6097,33 @@ public OnHL2MPTakeDamage(victim, attacker, inflictor, Float:damage, damagetype)
 		}
 
 		new hitgroup = ((weapon_index == HL2MP_CROSSBOW) ? hl2mp_players[victim][nextbow_hitgroup] : hl2mp_players[victim][next_hitgroup]);
-		if (hitgroup < 8) {
-			hitgroup += LOG_HIT_OFFSET;
+		if ((hitgroup >= 0) && (hitgroup < 8)) {
+			switch (hitgroup) {
+				case HITGROUP_GENERIC:
+					player_weapons[attacker][weapon_index].wgeneric++;
+				case HITGROUP_HEAD:
+					player_weapons[attacker][weapon_index].whead++;
+				case HITGROUP_CHEST:
+					player_weapons[attacker][weapon_index].wchest++;
+				case HITGROUP_STOMACH:
+					player_weapons[attacker][weapon_index].wstomach++;
+				case HITGROUP_LEFTARM:
+					player_weapons[attacker][weapon_index].wleftarm++;
+				case HITGROUP_RIGHTARM:
+					player_weapons[attacker][weapon_index].wrightarm++;
+				case HITGROUP_LEFTLEG:
+					player_weapons[attacker][weapon_index].wleftleg++;
+				case HITGROUP_RIGHTLEG:
+					player_weapons[attacker][weapon_index].wrightleg++;
+			}
 		}
 
 		new bool: headshot = ((GetClientHealth(victim) <= 0) && (hitgroup == HITGROUP_HEAD));
 		if (weapon_index > -1) {
-			player_weapons[attacker][weapon_index][whits]++;
-			player_weapons[attacker][weapon_index][wdamage] += RoundToNearest(damage);
-			player_weapons[attacker][weapon_index][hitgroup]++;
+			player_weapons[attacker][weapon_index].whits++;
+			player_weapons[attacker][weapon_index].wdamage += RoundToNearest(damage);
 			if (headshot) {
-				player_weapons[attacker][weapon_index][wheadshots]++;
+				player_weapons[attacker][weapon_index].wheadshots++;
 			}
 		}
 		
@@ -6018,7 +6144,7 @@ public OnZPSFireBullets(attacker, shots, String: weapon[])
 		GetClientWeapon(attacker, weapon_name, 32);
 		new weapon_index = get_weapon_index(zps_weapon_list, MAX_ZPS_WEAPON_COUNT, weapon_name);
 		if (weapon_index > -1) {
-			player_weapons[attacker][weapon_index][wshots]++;
+			player_weapons[attacker][weapon_index].wshots++;
 		}
 	}
 }
@@ -6036,9 +6162,6 @@ public OnZPSTakeDamage(victim, attacker, inflictor, Float:damage, damagetype)
 {	
 	if ((attacker > 0) && (attacker <= MaxClients) && (victim > 0) && (victim <= MaxClients)) {
 		new hitgroup = zps_players[victim][next_hitgroup_zps];
-		if (hitgroup < 8) {
-			hitgroup += LOG_HIT_OFFSET;
-		}
 		new bool: headshot = ((GetClientHealth(victim) <= 0) && (hitgroup == HITGROUP_HEAD));
 		
 		decl String: weapon_str[32];
@@ -6046,10 +6169,10 @@ public OnZPSTakeDamage(victim, attacker, inflictor, Float:damage, damagetype)
 		new weapon_index = get_weapon_index(zps_weapon_list, MAX_ZPS_WEAPON_COUNT, weapon_str);
 
 		if (weapon_index > -1) {
-			player_weapons[attacker][weapon_index][whits]++;
-			player_weapons[attacker][weapon_index][wdamage] += RoundToNearest(damage);
+			player_weapons[attacker][weapon_index].whits++;
+			player_weapons[attacker][weapon_index].wdamage += RoundToNearest(damage);
 			if (headshot) {
-				player_weapons[attacker][weapon_index][wheadshots]++;
+				player_weapons[attacker][weapon_index].wheadshots++;
 			}
 		}
 		zps_players[victim][next_hitgroup_zps] = 0;
@@ -6122,10 +6245,10 @@ public Event_INSMODPlayerDeath(Handle: event, const String: name[], bool:dontBro
 
 			new weapon_index = get_weapon_index(insmod_weapon_list, MAX_INSMOD_WEAPON_COUNT, weapon_str);
 			if (weapon_index > -1) {
-				player_weapons[attacker][weapon_index][wkills]++;
-				player_weapons[victim][weapon_index][wdeaths]++;
+				player_weapons[attacker][weapon_index].wkills++;
+				player_weapons[victim][weapon_index].wdeaths++;
 				if (GetClientTeam(attacker) == GetClientTeam(victim)) {
-					player_weapons[attacker][weapon_index][wteamkills]++;
+					player_weapons[attacker][weapon_index].wteamkills++;
 				}
 			}
 			
@@ -6159,18 +6282,33 @@ public Event_INSMODPlayerHurt(Handle: event, const String: name[], bool:dontBroa
 
 		new weapon_index = get_weapon_index(insmod_weapon_list, MAX_INSMOD_WEAPON_COUNT, weapon_str);
 		if (weapon_index > -1) {
-			player_weapons[attacker][weapon_index][wshots]++;
-			player_weapons[attacker][weapon_index][whits]++;
-			player_weapons[attacker][weapon_index][wdamage]  += GetEventInt(event, "dmg_health");
+			player_weapons[attacker][weapon_index].wshots++;
+			player_weapons[attacker][weapon_index].whits++;
+			player_weapons[attacker][weapon_index].wdamage  += GetEventInt(event, "dmg_health");
 			new hitgroup  = GetEventInt(event, "hitgroup");
-			if (hitgroup < 8) {
-				player_weapons[attacker][weapon_index][hitgroup + LOG_HIT_OFFSET]++;
-			} else {
-				player_weapons[attacker][weapon_index][hitgroup]++;
-			} 
+			if ((hitgroup >= 0) && (hitgroup < 8)) {
+				switch (hitgroup) {
+					case HITGROUP_GENERIC:
+						player_weapons[attacker][weapon_index].wgeneric++;
+					case HITGROUP_HEAD:
+						player_weapons[attacker][weapon_index].whead++;
+					case HITGROUP_CHEST:
+						player_weapons[attacker][weapon_index].wchest++;
+					case HITGROUP_STOMACH:
+						player_weapons[attacker][weapon_index].wstomach++;
+					case HITGROUP_LEFTARM:
+						player_weapons[attacker][weapon_index].wleftarm++;
+					case HITGROUP_RIGHTARM:
+						player_weapons[attacker][weapon_index].wrightarm++;
+					case HITGROUP_LEFTLEG:
+						player_weapons[attacker][weapon_index].wleftleg++;
+					case HITGROUP_RIGHTLEG:
+						player_weapons[attacker][weapon_index].wrightleg++;
+				}
+			}
 
 			if (hitgroup == HITGROUP_HEAD) {
-				player_weapons[attacker][weapon_index][wheadshots]++;
+				player_weapons[attacker][weapon_index].wheadshots++;
 				if (IsClientInGame(attacker)) {
 					log_player_event(attacker, "triggered", "headshot");
 				}
@@ -6193,7 +6331,7 @@ public Event_INSMODEventFired(Handle:event, const String:name[], bool:dontBroadc
 
 	new weapon_index = get_weapon_index(insmod_weapon_list, MAX_INSMOD_WEAPON_COUNT, weapon_str);
 	if (weapon_index > -1) {
-		player_weapons[client][weapon_index][wshots]++;
+		player_weapons[client][weapon_index].wshots++;
 	}
 
 }
