@@ -68,7 +68,7 @@ public OnClientPutInServer(client)
 }
 
 
-public QuerygameMEStatsCallback(command, payload, client, &Handle: datapack)
+public Action: QuerygameMEStatsCallback(int command, int payload, int client, Handle datapack)
 {
 	if ((client > 0) && (command == RAW_MESSAGE_CALLBACK_PLAYER)) {
 
@@ -141,7 +141,7 @@ public QuerygameMEStatsCallback(command, payload, client, &Handle: datapack)
 }
 
 
-public QuerygameMEStatsTop10Callback(command, payload, &Handle: datapack)
+public Action: QuerygameMEStatsTop10Callback(int command, int payload, Handle datapack)
 {
 	if ((command == RAW_MESSAGE_CALLBACK_TOP10)) {
 
@@ -181,7 +181,7 @@ public QuerygameMEStatsTop10Callback(command, payload, &Handle: datapack)
 }
 
 
-public QuerygameMEStatsNextCallback(command, payload, client, &Handle: datapack)
+public Action: QuerygameMEStatsNextCallback(int command, int payload, int client, Handle datapack)
 {
 	if ((client > 0) && (command == RAW_MESSAGE_CALLBACK_NEXT)) {
 
