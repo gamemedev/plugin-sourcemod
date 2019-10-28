@@ -110,12 +110,12 @@ gameme_plugin_data gameme_plugin;
 #define QUERY_TYPE_UNKNOWN			0
 #define QUERY_TYPE_SPECTATOR		1001
 
-enum player_display_messages {
-	String: smessage[255],
-	supdated
+enum struct player_display_messages {
+	char smessage[255];
+	int supdated;
 }
+player_display_messages player_messages[MAXPLAYERS + 1][MAXPLAYERS + 1];
 
-new player_messages[MAXPLAYERS + 1][MAXPLAYERS + 1][player_display_messages];
 
 enum spectator_data {
 	Handle: stimer,
@@ -476,15 +476,20 @@ new global_query_id = 0;
 new Handle: QueryCallbackArray;
 
 #define CALLBACK_DATA_SIZE 7
-enum callback_data {callback_data_id, Float: callback_data_time, callback_data_client, Handle: callback_data_plugin, Function: callback_data_function, callback_data_payload, callback_data_limit};
-
+enum struct callback_data {
+	int callback_data_id;
+	float callback_data_time;
+	int callback_data_client;
+	Handle callback_data_plugin;
+	Function callback_data_function;
+	int callback_data_payload;
+	int callback_data_limit;
+}
 
 public OnPluginStart() 
 {
 	LogToGame("gameME Plugin %s (http://www.gameme.com), copyright (c) 2007-2020 TTS Oetzel & Goerz GmbH", GAMEME_PLUGIN_VERSION);
 	
-	LogToGame("Log Locations: %d", gameme_plugin.log_locations);
-
 	// setup default values
 	gameme_plugin.log_locations       = 1;
 	gameme_plugin.damage_display      = 0;
@@ -888,8 +893,8 @@ public OnAllPluginsLoaded()
 			if ((gameme_plugin.mod_id == MOD_CSGO) || (gameme_plugin.mod_id == MOD_CSS)) {
 				gameme_players[i][pspectator][stimer] = INVALID_HANDLE;
 				for (new j = 0; (j <= MAXPLAYERS); j++) {
-					player_messages[j][i][supdated] = 1;
-					strcopy(player_messages[j][i][smessage], 255, "");
+					player_messages[j][i].supdated = 1;
+					strcopy(player_messages[j][i].smessage, 255, "");
 				}
 			}
 		}
@@ -1262,8 +1267,8 @@ public OnClientPutInServer(client)
 			if (gameme_plugin.display_spectator == 1) {
 				gameme_players[client][pspectator][stimer] = INVALID_HANDLE;
 				for (new j = 0; (j <= MAXPLAYERS); j++) {
-					player_messages[j][client][supdated] = 1;
-					strcopy(player_messages[j][client][smessage], 255, "");
+					player_messages[j][client].supdated = 1;
+					strcopy(player_messages[j][client].smessage, 255, "");
 				}
 			}
 		}
@@ -1488,9 +1493,9 @@ public Action: spectator_player_timer(Handle:timer, any: caller)
 			new target = GetEntPropEnt(caller, Prop_Send, "m_hObserverTarget");
 			if ((target > 0) && (target <= MaxClients) && (IsClientInGame(target))) {
 
-				if ((player_messages[caller][target][supdated] == 1) || (gameme_players[caller][pspectator][starget] == 0)) {
+				if ((player_messages[caller][target].supdated == 1) || (gameme_players[caller][pspectator][starget] == 0)) {
 					for (new i = 0; (i <= MAXPLAYERS); i++) {
-						player_messages[i][target][supdated] = 0;
+						player_messages[i][target].supdated = 0;
 					}
 					QueryIntGameMEStats("spectatorinfo", target, QuerygameMEStatsIntCallback, QUERY_TYPE_SPECTATOR);
 				}
@@ -1499,16 +1504,16 @@ public Action: spectator_player_timer(Handle:timer, any: caller)
 					gameme_players[caller][pspectator][srequested] = 0.0;
 				}
 
-				if (strcmp(player_messages[caller][target][smessage], "") != 0) {
+				if (strcmp(player_messages[caller][target].smessage, "") != 0) {
 					if ((caller > 0) && (caller <= MaxClients) && (!IsFakeClient(caller)) && (IsClientInGame(caller))) {
 						if ((GetGameTime() - gameme_players[caller][pspectator][srequested]) > 5) {
 							new Handle: message_handle = StartMessageOne("KeyHintText", caller);
 							if (message_handle != INVALID_HANDLE) {
 								if (gameme_plugin.protobuf == 1) {
-									PbAddString(message_handle, "hints", player_messages[caller][target][smessage]);
+									PbAddString(message_handle, "hints", player_messages[caller][target].smessage);
 								} else {
 									BfWriteByte(message_handle, 1);
-									BfWriteString(message_handle, player_messages[caller][target][smessage]);
+									BfWriteString(message_handle, player_messages[caller][target].smessage);
 								}
 								EndMessage();
 							}
@@ -1544,8 +1549,8 @@ public Action: QuerygameMEStatsIntCallback(int query_command, int query_payload,
 		if ((query_payload == QUERY_TYPE_SPECTATOR) && (query_target[0] > 0)) {
 			for (new i = 0; (i <= MAXPLAYERS); i++) {
 				if (query_caller[i] > -1) {
-					strcopy(player_messages[query_caller[i]][query_target[0]][smessage], 255, query_message);
-					ReplaceString(player_messages[query_caller[i]][query_target[0]][smessage], 255, "\\n", "\10");
+					strcopy(player_messages[query_caller[i]][query_target[0]].smessage, 255, query_message);
+					ReplaceString(player_messages[query_caller[i]][query_target[0]].smessage, 255, "\\n", "\10");
 					gameme_players[query_caller[i]][pspectator][srequested] = 0.0;
 				}
 			}
@@ -2263,8 +2268,8 @@ public Event_CSGOPlayerDeath(Handle: event, const String: name[], bool:dontBroad
 			}
 
 			for (new j = 0; (j <= MAXPLAYERS); j++) {
-				player_messages[j][attacker][supdated] = 1;
-				player_messages[j][victim][supdated] = 1;
+				player_messages[j][attacker].supdated = 1;
+				player_messages[j][victim].supdated = 1;
 			}
 		}
 	}
@@ -2338,8 +2343,8 @@ public Event_CSSPlayerDeath(Handle: event, const String: name[], bool:dontBroadc
 			}
 
 			for (new j = 0; (j <= MAXPLAYERS); j++) {
-				player_messages[j][attacker][supdated] = 1;
-				player_messages[j][victim][supdated] = 1;
+				player_messages[j][attacker].supdated = 1;
+				player_messages[j][victim].supdated = 1;
 			}
 		}
 	}
@@ -2642,7 +2647,7 @@ public Event_CSGORoundStart(Handle: event, const String: name[], bool:dontBroadc
 			}
 
 			for (new j = 0; (j <= MAXPLAYERS); j++) {
-				player_messages[i][j][supdated] = 1;
+				player_messages[i][j].supdated = 1;
 			}
 
 			if ((i > 0) && (IsClientInGame(i)) && (!IsFakeClient(i)) && (IsClientObserver(i))) {
@@ -2664,7 +2669,7 @@ public Event_CSSRoundStart(Handle: event, const String: name[], bool:dontBroadca
 			}
 
 			for (new j = 0; (j <= MAXPLAYERS); j++) {
-				player_messages[i][j][supdated] = 1;
+				player_messages[i][j].supdated = 1;
 			}
 
 			if ((i > 0) && (IsClientInGame(i)) && (!IsFakeClient(i)) && (IsClientObserver(i))) {
@@ -3465,8 +3470,8 @@ public OnClientDisconnect(client)
 				gameme_players[client][pspectator][stimer] = INVALID_HANDLE;
 			}
 			for (new j = 0; (j <= MAXPLAYERS); j++) {
-				player_messages[j][client][supdated] = 1;
-				strcopy(player_messages[j][client][smessage], 255, "");
+				player_messages[j][client].supdated = 1;
+				strcopy(player_messages[j][client].smessage, 255, "");
 			}
 		}
 
@@ -3570,9 +3575,9 @@ find_callback(query_id)
 	new size = GetArraySize(QueryCallbackArray);
 	
 	for (new i = 0; i < size; i++) {
-		decl data[callback_data];
+		callback_data data;
 		GetArrayArray(QueryCallbackArray, i, data, sizeof(data));
-		if ((data[callback_data_id] == query_id) && (data[callback_data_plugin] != INVALID_HANDLE) && (data[callback_data_function] != INVALID_FUNCTION)) {
+		if ((data.callback_data_id == query_id) && (data.callback_data_plugin != INVALID_HANDLE) && (data.callback_data_function != INVALID_FUNCTION)) {
 			index = i;
 			break;
 		}
@@ -3600,14 +3605,14 @@ public native_query_gameme_stats(Handle: plugin, numParams)
 	if (cb_client < 1) {
 		new queryid = get_query_id();
 
-		decl data[callback_data];
-		data[callback_data_id] = queryid;
-		data[callback_data_time] = GetGameTime();
-		data[callback_data_client] = cb_client;
-		data[callback_data_plugin] = plugin;
-		data[callback_data_function] = cb_function;
-		data[callback_data_payload] = cb_payload;
-		data[callback_data_limit] = cb_limit;
+		callback_data data;
+		data.callback_data_id = queryid;
+		data.callback_data_time = GetGameTime();
+		data.callback_data_client = cb_client;
+		data.callback_data_plugin = plugin;
+		data.callback_data_function = cb_function;
+		data.callback_data_payload = cb_payload;
+		data.callback_data_limit = cb_limit;
 		if (QueryCallbackArray != INVALID_HANDLE) {
 			PushArrayArray(QueryCallbackArray, data);
 		}
@@ -3621,14 +3626,14 @@ public native_query_gameme_stats(Handle: plugin, numParams)
 			if (userid > 0) {
 				new queryid = get_query_id();
 
-				decl data[callback_data];
-				data[callback_data_id] = queryid;
-				data[callback_data_time] = GetGameTime();
-				data[callback_data_client] = cb_client;
-				data[callback_data_plugin] = plugin;
-				data[callback_data_function] = cb_function;
-				data[callback_data_payload] = cb_payload;
-				data[callback_data_limit] = cb_limit;
+				callback_data data;
+				data.callback_data_id = queryid;
+				data.callback_data_time = GetGameTime();
+				data.callback_data_client = cb_client;
+				data.callback_data_plugin = plugin;
+				data.callback_data_function = cb_function;
+				data.callback_data_payload = cb_payload;
+				data.callback_data_limit = cb_limit;
 
 				if (QueryCallbackArray != INVALID_HANDLE) {
 					PushArrayArray(QueryCallbackArray, data);
@@ -3760,19 +3765,19 @@ public Action: gameme_raw_message(args)
 						if (query_id > 0) {
 							new cb_array_index = find_callback(query_id);
 							if (cb_array_index >= 0) {
-								decl data[callback_data];
+								callback_data data;
 								GetArrayArray(QueryCallbackArray, cb_array_index, data, sizeof(data));
-								if ((data[callback_data_plugin] != INVALID_HANDLE) && (data[callback_data_function] != INVALID_FUNCTION)) {
-									Call_StartFunction(data[callback_data_plugin], data[callback_data_function]);
+								if ((data.callback_data_plugin != INVALID_HANDLE) && (data.callback_data_function != INVALID_FUNCTION)) {
+									Call_StartFunction(data.callback_data_plugin, data.callback_data_function);
 									Call_PushCell(RAW_MESSAGE_CALLBACK_PLAYER);
 									
-									Call_PushCell(data[callback_data_payload]);
+									Call_PushCell(data.callback_data_payload);
 									Call_PushCell(client);
 
 									Call_PushCellRef(pack);
 									Call_Finish(_:result);
 									
-									if (data[callback_data_limit] == 1) {
+									if (data.callback_data_limit == 1) {
 										RemoveFromArray(QueryCallbackArray, cb_array_index); 
 									}
 								}
@@ -3864,16 +3869,16 @@ public Action: gameme_raw_message(args)
 						if (query_id > 0) {
 							new cb_array_index = find_callback(query_id);
 							if (cb_array_index >= 0) {
-								decl data[callback_data];
+								callback_data data;
 								GetArrayArray(QueryCallbackArray, cb_array_index, data, sizeof(data));
-								if ((data[callback_data_plugin] != INVALID_HANDLE) && (data[callback_data_function] != INVALID_FUNCTION)) {
-									Call_StartFunction(data[callback_data_plugin], data[callback_data_function]);
+								if ((data.callback_data_plugin != INVALID_HANDLE) && (data.callback_data_function != INVALID_FUNCTION)) {
+									Call_StartFunction(data.callback_data_plugin, data.callback_data_function);
 									Call_PushCell(RAW_MESSAGE_CALLBACK_TOP10);
-									Call_PushCell(data[callback_data_payload]);
+									Call_PushCell(data.callback_data_payload);
 									Call_PushCellRef(pack);
 									Call_Finish(_:result);
 									
-									if (data[callback_data_limit] == 1) {
+									if (data.callback_data_limit == 1) {
 										RemoveFromArray(QueryCallbackArray, cb_array_index); 
 									}
 								}
@@ -3943,17 +3948,17 @@ public Action: gameme_raw_message(args)
 						if (query_id > 0) {
 							new cb_array_index = find_callback(query_id);
 							if (cb_array_index >= 0) {
-								decl data[callback_data];
+								callback_data data;
 								GetArrayArray(QueryCallbackArray, cb_array_index, data, sizeof(data));
-								if ((data[callback_data_plugin] != INVALID_HANDLE) && (data[callback_data_function] != INVALID_FUNCTION)) {
-									Call_StartFunction(data[callback_data_plugin], data[callback_data_function]);
+								if ((data.callback_data_plugin != INVALID_HANDLE) && (data.callback_data_function != INVALID_FUNCTION)) {
+									Call_StartFunction(data.callback_data_plugin, data.callback_data_function);
 									Call_PushCell(RAW_MESSAGE_CALLBACK_NEXT);
-									Call_PushCell(data[callback_data_payload]);
+									Call_PushCell(data.callback_data_payload);
 									Call_PushCell(client);
 									Call_PushCellRef(pack);
 									Call_Finish(_:result);
 									
-									if (data[callback_data_limit] == 1) {
+									if (data.callback_data_limit == 1) {
 										RemoveFromArray(QueryCallbackArray, cb_array_index); 
 									}
 								}
@@ -4019,20 +4024,20 @@ public Action: gameme_raw_message(args)
 					
 					new cb_array_index = find_callback(query_id);
 					if (cb_array_index >= 0) {
-						decl data[callback_data];
+						callback_data data;
 						GetArrayArray(QueryCallbackArray, cb_array_index, data, sizeof(data));
-						if ((data[callback_data_plugin] != INVALID_HANDLE) && (data[callback_data_function] != INVALID_FUNCTION)) {
+						if ((data.callback_data_plugin != INVALID_HANDLE) && (data.callback_data_function != INVALID_FUNCTION)) {
 							decl Action: result;
-							Call_StartFunction(data[callback_data_plugin], data[callback_data_function]);
+							Call_StartFunction(data.callback_data_plugin, data.callback_data_function);
 							Call_PushCell(RAW_MESSAGE_CALLBACK_INT_SPECTATOR);
-							Call_PushCell(data[callback_data_payload]);
+							Call_PushCell(data.callback_data_payload);
 							Call_PushArray(caller, MAXPLAYERS + 1);
 							Call_PushArray(target, MAXPLAYERS + 1);
 							Call_PushString(gameme_plugin.message_prefix_value);
 							Call_PushString(message);
 							Call_Finish(_:result);
 
-							if (data[callback_data_limit] == 1) {
+							if (data.callback_data_limit == 1) {
 								RemoveFromArray(QueryCallbackArray, cb_array_index); 
 							}
 						}
@@ -4804,7 +4809,7 @@ public Action: gameME_Event_PlyBombDropped(Handle: event, const String: name[], 
 
 		if (gameme_plugin.display_spectator == 1) {
 			for (new i = 0; (i <= MAXPLAYERS); i++) {
-				player_messages[i][player][supdated] = 1;
+				player_messages[i][player].supdated = 1;
 			}
 		}
 	}
@@ -4822,7 +4827,7 @@ public Action: gameME_Event_PlyBombPickup(Handle: event, const String: name[], b
 		}
 		if (gameme_plugin.display_spectator == 1) {
 			for (new i = 0; (i <= MAXPLAYERS); i++) {
-				player_messages[i][player][supdated] = 1;
+				player_messages[i][player].supdated = 1;
 			}
 		}
 	}
@@ -4840,7 +4845,7 @@ public Action: gameME_Event_PlyBombPlanted(Handle: event, const String: name[], 
 		}
 		if (gameme_plugin.display_spectator == 1) {
 			for (new i = 0; (i <= MAXPLAYERS); i++) {
-				player_messages[i][player][supdated] = 1;
+				player_messages[i][player].supdated = 1;
 			}
 		}
 	}
@@ -4859,7 +4864,7 @@ public Action: gameME_Event_PlyBombDefused(Handle: event, const String: name[], 
 
 		if (gameme_plugin.display_spectator == 1) {
 			for (new i = 0; (i <= MAXPLAYERS); i++) {
-				player_messages[i][player][supdated] = 1;
+				player_messages[i][player].supdated = 1;
 			}
 		}
 	}
@@ -4877,7 +4882,7 @@ public Action: gameME_Event_PlyHostageKill(Handle: event, const String: name[], 
 
 		if (gameme_plugin.display_spectator == 1) {
 			for (new i = 0; (i <= MAXPLAYERS); i++) {
-				player_messages[i][player][supdated] = 1;
+				player_messages[i][player].supdated = 1;
 			}
 		}
 	}
@@ -4895,7 +4900,7 @@ public Action: gameME_Event_PlyHostageResc(Handle: event, const String: name[], 
 
 		if (gameme_plugin.display_spectator == 1) {
 			for (new i = 0; (i <= MAXPLAYERS); i++) {
-				player_messages[i][player][supdated] = 1;
+				player_messages[i][player].supdated = 1;
 			}
 		}
 	}
