@@ -44,7 +44,7 @@ forward onGameMEStatsPublicCommand(command, client, String: message_prefix[], &H
 forward onGameMEStatsTop10(command, client, String: message_prefix[], &Handle: datapack);
 forward onGameMEStatsNext(command, client, String: message_prefix[], &Handle: datapack);
 
-typedef gameMEStatsCallback = function Action(int command, int payload, int client, Handle datapack);
+typedef gameMEStatsCallback = function Action(int command, int payload, int client, Handle &datapack);
 /**
  * Query gameME Stats data from a client
  * 
@@ -57,7 +57,7 @@ typedef gameMEStatsCallback = function Action(int command, int payload, int clie
 native QueryGameMEStats(String: request[], client, gameMEStatsCallback: callback, payload = 0);
 
 
-typedef gameMEStatsTop10Callback = function Action(int command, int payload, Handle datapack);
+typedef gameMEStatsTop10Callback = function Action(int command, int payload, Handle &datapack);
 /**
  * Query Top10 players from gameME Stats
  * 
@@ -70,7 +70,7 @@ typedef gameMEStatsTop10Callback = function Action(int command, int payload, Han
 native QueryGameMEStatsTop10(String: request[], client, gameMEStatsTop10Callback: callback, payload = 0);
 
 
-typedef gameMEStatsNextCallback = function Action(int command, int payload, int client, Handle datapack);
+typedef gameMEStatsNextCallback = function Action(int command, int payload, int client, Handle &datapack);
 /**
  * Query next players from gameME Stats for s specified client
  * 
