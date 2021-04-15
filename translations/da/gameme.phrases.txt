@@ -19,7 +19,7 @@
 	}
 	"IngameMenu_Menu4"
 	{
-		"da"		"Auto Ranking"
+		"da"		"Auto Rangering"
 	}
 	"IngameMenu_Menu5"
 	{
@@ -27,7 +27,7 @@
 	}
 	"IngameMenu_Menu6"
 	{
-		"da"		"Til/Fra Rank Visning"
+		"da"		"Til/Fra Visning Af Rang"
 	}
 	"IngameMenu_Menu7"
 	{
@@ -73,7 +73,7 @@
 
 	"AutoMenu_Caption"
 	{
-		"da"		"gameME - Auto-Ranking"
+		"da"		"gameME - Auto-Rangering"
 	}
 	"AutoMenu_Menu1"
 	{
