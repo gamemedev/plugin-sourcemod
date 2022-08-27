@@ -1717,26 +1717,20 @@ public build_damage_panel(player_index)
 								if (killer_index < sizeof(killer)) {
 									if (gameme_plugin.mod_id == MOD_CSGO) {								
 										if (attacked_hits == 1) {
-											csgo_weapon_index_mapping = INVALID_HANDLE;
 											Format(killer[killer_index], 128, "  %s - %d %T, %d %T, %s", killer_name, killer_hpleft,  "DamagePanel_Hp", player_index, attacked_damage, "DamagePanel_Dmg", player_index, csgo_weapon_list[killer_weapon]);
 										} else {
-											csgo_weapon_index_mapping = INVALID_HANDLE;
 											Format(killer[killer_index], 128, "  %s - %d %T, %d %T, %s", killer_name, killer_hpleft,  "DamagePanel_Hp", player_index, attacked_damage, "DamagePanel_Dmg", player_index, csgo_weapon_list[killer_weapon]);
 										}
 									} else if (gameme_plugin.mod_id == MOD_CSS) {
 										if (attacked_hits == 1) {
-											css_weapon_index_mapping = INVALID_HANDLE;
 											Format(killer[killer_index], 128, "  %s - %d %T, %d %T, %s", killer_name, killer_hpleft,  "DamagePanel_Hp", player_index, attacked_damage, "DamagePanel_Dmg", player_index, css_weapon_list[killer_weapon]);
 										} else {
-											css_weapon_index_mapping = INVALID_HANDLE;
 											Format(killer[killer_index], 128, "  %s - %d %T, %d %T, %s", killer_name, killer_hpleft,  "DamagePanel_Hp", player_index, attacked_damage, "DamagePanel_Dmg", player_index, css_weapon_list[killer_weapon]);
 										}
 									} else if (gameme_plugin.mod_id == MOD_DODS) {
 										if (attacked_hits == 1) {
-											dods_weapon_index_mapping = INVALID_HANDLE;
 											Format(killer[killer_index], 128, "  %s - %d %T, %d %T, %s", killer_name, killer_hpleft,  "DamagePanel_Hp", player_index, attacked_damage, "DamagePanel_Dmg", player_index, dods_weapon_list[killer_weapon]);
 										} else {
-											dods_weapon_index_mapping = INVALID_HANDLE;
 											Format(killer[killer_index], 128, "  %s - %d %T, %d %T, %s", killer_name, killer_hpleft,  "DamagePanel_Hp", player_index, attacked_damage, "DamagePanel_Dmg", player_index, dods_weapon_list[killer_weapon]);
 										}
 									}
