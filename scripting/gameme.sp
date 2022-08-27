@@ -1475,58 +1475,44 @@ dump_player_data(player_index)
 			if (player_weapons[player_index][i].wshots > 0) {
 				switch (gameme_plugin.mod_id) {
 					case MOD_CSGO: {
-						csgo_weapon_index_mapping = INVALID_HANDLE;
 						LogToGame("\"%L\" triggered \"weaponstats\" (weapon \"%s\") (shots \"%d\") (hits \"%d\") (kills \"%d\") (headshots \"%d\") (tks \"%d\") (damage \"%d\") (deaths \"%d\")", player_index, csgo_weapon_list[i], player_weapons[player_index][i].wshots, player_weapons[player_index][i].whits, player_weapons[player_index][i].wkills, player_weapons[player_index][i].wheadshots, player_weapons[player_index][i].wteamkills, player_weapons[player_index][i].wdamage, player_weapons[player_index][i].wdeaths); 
 						if (player_weapons[player_index][i].whits > 0) {
-							csgo_weapon_index_mapping = INVALID_HANDLE;
 							LogToGame("\"%L\" triggered \"weaponstats2\" (weapon \"%s\") (head \"%d\") (chest \"%d\") (stomach \"%d\") (leftarm \"%d\") (rightarm \"%d\") (leftleg \"%d\") (rightleg \"%d\")", player_index, csgo_weapon_list[i], player_weapons[player_index][i].whead, player_weapons[player_index][i].wchest, player_weapons[player_index][i].wstomach, player_weapons[player_index][i].wleftarm, player_weapons[player_index][i].wrightarm, player_weapons[player_index][i].wleftleg, player_weapons[player_index][i].wrightleg); 
 						}
 					}
 					case MOD_CSS: {
-						css_weapon_index_mapping = INVALID_HANDLE;
 						LogToGame("\"%L\" triggered \"weaponstats\" (weapon \"%s\") (shots \"%d\") (hits \"%d\") (kills \"%d\") (headshots \"%d\") (tks \"%d\") (damage \"%d\") (deaths \"%d\")", player_index, css_weapon_list[i], player_weapons[player_index][i].wshots, player_weapons[player_index][i].whits, player_weapons[player_index][i].wkills, player_weapons[player_index][i].wheadshots, player_weapons[player_index][i].wteamkills, player_weapons[player_index][i].wdamage, player_weapons[player_index][i].wdeaths); 
 						if (player_weapons[player_index][i].whits > 0) {
-							css_weapon_index_mapping = INVALID_HANDLE;
 							LogToGame("\"%L\" triggered \"weaponstats2\" (weapon \"%s\") (head \"%d\") (chest \"%d\") (stomach \"%d\") (leftarm \"%d\") (rightarm \"%d\") (leftleg \"%d\") (rightleg \"%d\")", player_index, css_weapon_list[i], player_weapons[player_index][i].whead, player_weapons[player_index][i].wchest, player_weapons[player_index][i].wstomach, player_weapons[player_index][i].wleftarm, player_weapons[player_index][i].wrightarm, player_weapons[player_index][i].wleftleg, player_weapons[player_index][i].wrightleg); 
 						}
 					}
 					case MOD_DODS: {
-						dods_weapon_index_mapping = INVALID_HANDLE;
 						LogToGame("\"%L\" triggered \"weaponstats\" (weapon \"%s\") (shots \"%d\") (hits \"%d\") (kills \"%d\") (headshots \"%d\") (tks \"%d\") (damage \"%d\") (deaths \"%d\")", player_index, dods_weapon_list[i], player_weapons[player_index][i].wshots, player_weapons[player_index][i].whits, player_weapons[player_index][i].wkills, player_weapons[player_index][i].wheadshots, player_weapons[player_index][i].wteamkills, player_weapons[player_index][i].wdamage, player_weapons[player_index][i].wdeaths); 
 						if (player_weapons[player_index][i].whits > 0) {
-							dods_weapon_index_mapping = INVALID_HANDLE;
 							LogToGame("\"%L\" triggered \"weaponstats2\" (weapon \"%s\") (head \"%d\") (chest \"%d\") (stomach \"%d\") (leftarm \"%d\") (rightarm \"%d\") (leftleg \"%d\") (rightleg \"%d\")", player_index, dods_weapon_list[i], player_weapons[player_index][i].whead, player_weapons[player_index][i].wchest, player_weapons[player_index][i].wstomach, player_weapons[player_index][i].wleftarm, player_weapons[player_index][i].wrightarm, player_weapons[player_index][i].wleftleg, player_weapons[player_index][i].wrightleg); 
 						}
 					}
 					case MOD_L4D, MOD_L4DII: {
-						l4d_weapon_index_mapping = INVALID_HANDLE;
 						LogToGame("\"%L\" triggered \"weaponstats\" (weapon \"%s\") (shots \"%d\") (hits \"%d\") (kills \"%d\") (headshots \"%d\") (tks \"%d\") (damage \"%d\") (deaths \"%d\")", player_index, l4d_weapon_list[i], player_weapons[player_index][i].wshots, player_weapons[player_index][i].whits, player_weapons[player_index][i].wkills, player_weapons[player_index][i].wheadshots, player_weapons[player_index][i].wteamkills, player_weapons[player_index][i].wdamage, player_weapons[player_index][i].wdeaths); 
 						if (player_weapons[player_index][i].whits > 0) {
-							l4d_weapon_index_mapping = INVALID_HANDLE;
 							LogToGame("\"%L\" triggered \"weaponstats2\" (weapon \"%s\") (head \"%d\") (chest \"%d\") (stomach \"%d\") (leftarm \"%d\") (rightarm \"%d\") (leftleg \"%d\") (rightleg \"%d\")", player_index, l4d_weapon_list[i], player_weapons[player_index][i].whead, player_weapons[player_index][i].wchest, player_weapons[player_index][i].wstomach, player_weapons[player_index][i].wleftarm, player_weapons[player_index][i].wrightarm, player_weapons[player_index][i].wleftleg, player_weapons[player_index][i].wrightleg); 
 						}
 					}
 					case MOD_INSMOD: {								
-						insmod_weapon_index_mapping = INVALID_HANDLE;
 						LogToGame("\"%L\" triggered \"weaponstats\" (weapon \"%s\") (shots \"%d\") (hits \"%d\") (kills \"%d\") (headshots \"%d\") (tks \"%d\") (damage \"%d\") (deaths \"%d\")", player_index, insmod_weapon_list[i], player_weapons[player_index][i].wshots, player_weapons[player_index][i].whits, player_weapons[player_index][i].wkills, player_weapons[player_index][i].wheadshots, player_weapons[player_index][i].wteamkills, player_weapons[player_index][i].wdamage, player_weapons[player_index][i].wdeaths); 
 						if (player_weapons[player_index][i].whits > 0) {
-							insmod_weapon_index_mapping = INVALID_HANDLE;
 							LogToGame("\"%L\" triggered \"weaponstats2\" (weapon \"%s\") (head \"%d\") (chest \"%d\") (stomach \"%d\") (leftarm \"%d\") (rightarm \"%d\") (leftleg \"%d\") (rightleg \"%d\")", player_index, insmod_weapon_list[i], player_weapons[player_index][i].whead, player_weapons[player_index][i].wchest, player_weapons[player_index][i].wstomach, player_weapons[player_index][i].wleftarm, player_weapons[player_index][i].wrightarm, player_weapons[player_index][i].wleftleg, player_weapons[player_index][i].wrightleg); 
 						}
 					}
 					case MOD_HL2MP: {								
-						hl2mp_weapon_index_mapping = INVALID_HANDLE;
 						LogToGame("\"%L\" triggered \"weaponstats\" (weapon \"%s\") (shots \"%d\") (hits \"%d\") (kills \"%d\") (headshots \"%d\") (tks \"%d\") (damage \"%d\") (deaths \"%d\")", player_index, hl2mp_weapon_list[i], player_weapons[player_index][i].wshots, player_weapons[player_index][i].whits, player_weapons[player_index][i].wkills, player_weapons[player_index][i].wheadshots, player_weapons[player_index][i].wteamkills, player_weapons[player_index][i].wdamage, player_weapons[player_index][i].wdeaths); 
 						if (player_weapons[player_index][i].whits > 0) {
-							hl2mp_weapon_index_mapping = INVALID_HANDLE;
 							LogToGame("\"%L\" triggered \"weaponstats2\" (weapon \"%s\") (head \"%d\") (chest \"%d\") (stomach \"%d\") (leftarm \"%d\") (rightarm \"%d\") (leftleg \"%d\") (rightleg \"%d\")", player_index, hl2mp_weapon_list[i], player_weapons[player_index][i].whead, player_weapons[player_index][i].wchest, player_weapons[player_index][i].wstomach, player_weapons[player_index][i].wleftarm, player_weapons[player_index][i].wrightarm, player_weapons[player_index][i].wleftleg, player_weapons[player_index][i].wrightleg); 
 						}
 					}
 					case MOD_ZPS: {								
-						zps_weapon_index_mapping = INVALID_HANDLE;
 						LogToGame("\"%L\" triggered \"weaponstats\" (weapon \"%s\") (shots \"%d\") (hits \"%d\") (kills \"%d\") (headshots \"%d\") (tks \"%d\") (damage \"%d\") (deaths \"%d\")", player_index, zps_weapon_list[i], player_weapons[player_index][i].wshots, player_weapons[player_index][i].whits, player_weapons[player_index][i].wkills, player_weapons[player_index][i].wheadshots, player_weapons[player_index][i].wteamkills, player_weapons[player_index][i].wdamage, player_weapons[player_index][i].wdeaths); 
 						if (player_weapons[player_index][i].whits > 0) {
-							zps_weapon_index_mapping = INVALID_HANDLE;
 							LogToGame("\"%L\" triggered \"weaponstats2\" (weapon \"%s\") (head \"%d\") (chest \"%d\") (stomach \"%d\") (leftarm \"%d\") (rightarm \"%d\") (leftleg \"%d\") (rightleg \"%d\")", player_index, zps_weapon_list[i], player_weapons[player_index][i].whead, player_weapons[player_index][i].wchest, player_weapons[player_index][i].wstomach, player_weapons[player_index][i].wleftarm, player_weapons[player_index][i].wrightarm, player_weapons[player_index][i].wleftleg, player_weapons[player_index][i].wrightleg); 
 						}
 					}
