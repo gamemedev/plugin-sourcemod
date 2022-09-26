@@ -1,0 +1,154 @@
+"Phrases"
+{
+	"IngameMenu_Caption"
+	{
+		"ua" "gameME - Головне меню"
+	}
+	"IngameMenu_Menu1"
+	{
+		"ua" "Показати ранг"
+	}
+	"IngameMenu_Menu2"
+	{
+		"ua" "Наступні гравці"
+	}
+	"IngameMenu_Menu3"
+	{
+		"ua" "Топ 10 гравців"
+	}
+	"IngameMenu_Menu4"
+	{
+		"ua" "Авто-показ рангу"
+	}
+	"IngameMenu_Menu5"
+	{
+		"ua" "Події чату"
+	}
+	"IngameMenu_Menu6"
+	{
+		"ua" "Приховати/показати себе в статистиці"
+	}
+	"IngameMenu_Menu7"
+	{
+		"ua" "Ранг кланів"
+	}
+	"IngameMenu_Menu8"
+	{
+		"ua" "Статус сервера"
+	}
+	"IngameMenu_Menu9"
+	{
+		"ua" "Моя статистика"
+	}
+	"IngameMenu_Menu10"
+	{
+		"ua" "Використання зброї"
+	}
+	"IngameMenu_Menu11"
+	{
+		"ua" "Точність зброї"
+	}
+	"IngameMenu_Menu12"
+	{
+		"ua" "Цілі зброї"
+	}
+	"IngameMenu_Menu13"
+	{
+		"ua" "Вбивства гравців"
+	}
+	"IngameMenu_Menu14"
+	{
+		"ua" "Бан-лист"
+	}
+	"IngameMenu_Menu15"
+	{
+		"ua" "Показати допомогу"
+	}
+	"IngameMenu_Menu16"
+	{
+		"ua" "Скинути статистику"
+	}
+
+
+	"AutoMenu_Caption"
+	{
+		"ua" "Авто-показ рангу"
+	}
+	"AutoMenu_Menu1"
+	{
+		"ua" "Увімкнути на початку раунду"
+	}
+	"AutoMenu_Menu2"
+	{
+		"ua" "Увімкнути наприкінці раунду"
+	}
+	"AutoMenu_Menu3"
+	{
+		"ua" "Увімкнути при смерті гравця"
+	}
+	"AutoMenu_Menu4"
+	{
+		"ua" "Вимкнути"
+	}
+
+
+	"ConsoleMenu_Caption"
+	{
+		"ua" "Події чату"
+	}
+	"ConsoleMenu_Menu1"
+	{
+		"ua" "Увімкнути події"
+	}
+	"ConsoleMenu_Menu2"
+	{
+		"ua" "Вимкнути події"
+	}
+	"ConsoleMenu_Menu3"
+	{
+		"ua" "Увімкнути глобальний чат"
+	}
+	"ConsoleMenu_Menu4"
+	{
+		"ua" "Вимкнути глобальний чат"
+	}
+
+
+	"DamagePanel_Attackers"
+	{
+		"ua" "Атакуючі"
+	}
+	"DamagePanel_Killed"
+	{
+		"ua" "Убито"
+	}
+	"DamagePanel_Wounded"
+	{
+		"ua" "Поранено"
+	}
+	"DamagePanel_Killer"
+	{
+		"ua" "Вас убив"
+	}
+	"DamagePanel_Dmg"
+	{
+		"ua" "ушкоджень"
+	}
+	"DamagePanel_Hit"
+	{
+		"ua" "попадання"
+	}
+	"DamagePanel_Hits"
+	{
+		"ua" "влучень"
+	}
+	"DamagePanel_Hp"
+	{
+		"ua" "хп"
+	}
+
+	"DamageChat_Killedyou"
+	{
+		"ua" "{1} маючи {3} hp вбив вас завдавши {2} шкоди"
+	}
+}
